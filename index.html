@@ -4,19 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#1a1f22">
-    <title>Aniimo Atlas VN — Bản đồ &amp; Aniilog</title>
-    <link rel="stylesheet" href="./styles.css?v=7.0.0-atlas">
+    <title>Aniimo Atlas VN — Bản đồ &amp; Aniimo</title>
+    <link rel="stylesheet" href="./styles.css?v=aurora-v8"><link rel="stylesheet" href="./atlas-vn-ui.css?v=aurora-v8">
   </head>
   <body>
     <main id="appShell" class="app-shell">
       <aside id="sidebar" class="sidebar" aria-label="Điều khiển bản đồ và tiến trình">
         <header class="brand">
           <div class="brand-copy">
-            <h1>Aniimo Atlas VN</h1>
+            <h1>MinMax's Aniipedia</h1>
             <span id="appVersion" class="app-version app-version-button" aria-hidden="true">v0.5.37</span>
             <p id="mapMeta" class="database-meta">Database loading</p>
           </div>
-          <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Open settings" title="Cài đặt">
+          <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">
             <svg class="settings-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
               <circle cx="12" cy="12" r="3" />
@@ -36,7 +36,7 @@
         <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
           <section class="panel">
             <div id="mapTabs" class="map-tabs" role="tablist" aria-label="Các bản đồ"></div>
-            <label class="search-label" for="searchInput">Search</label>
+            <label class="search-label" for="searchInput">Tìm kiếm</label>
             <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Tên, khu vực, tọa độ">
             <div class="toolbar" aria-label="Filters">
               <button id="selectAllButton" type="button">Bật tất cả</button>
@@ -60,14 +60,14 @@
               </div>
               <span id="filterCount" class="filter-count" aria-live="polite">0 / 0</span>
             </div>
-            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Các lớp hiển thị"></div>
+            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Marker layers"></div>
             <div id="itemList" class="item-list"></div>
           </section>
         </div>
 
         <section id="trackingWorkspace" class="tracking-workspace" role="tabpanel" aria-labelledby="trackingWorkspaceTab" hidden>
           <div class="panel-heading">
-            <h2>Tracking</h2>
+            <h2>Theo dõi</h2>
             <span id="trackingCount" class="filter-count" aria-live="polite">0 tracked</span>
           </div>
           <div id="trackingList" class="tracking-list"></div>
@@ -76,12 +76,12 @@
         <section id="checklistWorkspace" class="checklist-workspace" role="tabpanel" aria-labelledby="checklistWorkspaceTab" hidden>
           <div class="panel-heading">
             <h2>Checklist</h2>
-            <span id="checklistCount" class="filter-count" aria-live="polite">Loading</span>
+            <span id="checklistCount" class="filter-count" aria-live="polite">Đang tải</span>
           </div>
           <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Checklist categories"></div>
           <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Lumin checklist sources" hidden></div>
-          <label class="search-label" for="checklistSearchInput">Search</label>
-          <input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, form, or location">
+          <label class="search-label" for="checklistSearchInput">Tìm kiếm</label>
+          <input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc khu vực">
           <div id="checklistList" class="checklist-list" aria-live="polite"></div>
         </section>
 
@@ -95,14 +95,14 @@
 
         <section id="desktopSelectionPanel" class="panel detail-panel" aria-live="polite" hidden>
           <div class="panel-heading">
-            <h2>Chi tiết</h2>
+            <h2>Selection</h2>
             <div class="selection-heading-actions">
               <button id="selectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
               <button id="desktopSelectionToggle" class="selection-minimize-button" type="button" aria-controls="selectionDetail" aria-expanded="true" aria-label="Minimize selection" title="Minimize selection">&minus;</button>
               <button id="selectionCloseButton" class="selection-close-button" type="button" aria-label="Close selection" title="Close selection">&times;</button>
             </div>
           </div>
-          <div id="selectionDetail" class="selection empty">Chọn một điểm trên bản đồ để xem chi tiết</div>
+          <div id="selectionDetail" class="selection empty">No marker selected</div>
         </section>
       </aside>
 
@@ -110,7 +110,7 @@
         <span aria-hidden="true">&rsaquo;</span>
       </button>
 
-      <section class="map-panel" aria-label="Bản đồ tương tác và thư viện dữ liệu">
+      <section class="map-panel" aria-label="Interactive map and catalogue">
         <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">
           <span aria-hidden="true">&lsaquo;</span>
         </button>
@@ -142,14 +142,14 @@
           </div>
           <section id="mobileSelectionPanel" class="panel mobile-selection-panel is-minimized" aria-live="polite" hidden>
             <div class="panel-heading mobile-selection-heading">
-              <h2>Chi tiết</h2>
+              <h2>Selection</h2>
               <div class="mobile-selection-actions">
                 <button id="mobileSelectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
                 <button id="mobileSelectionToggle" class="mobile-selection-toggle" type="button" aria-controls="mobileSelectionDetail" aria-expanded="false" aria-label="Expand selection" title="Expand selection">+</button>
                 <button id="mobileSelectionCloseButton" class="selection-close-button mobile-selection-close-button" type="button" aria-label="Close selection" title="Close selection">&times;</button>
               </div>
             </div>
-            <div id="mobileSelectionDetail" class="selection empty">Chọn một điểm trên bản đồ để xem chi tiết</div>
+            <div id="mobileSelectionDetail" class="selection empty">No marker selected</div>
           </section>
         </div>
         <section id="catalogPanel" class="catalog-panel" role="region" aria-live="polite" hidden></section>
@@ -161,25 +161,25 @@
       <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="settings-dialog-heading">
           <h2 id="settingsTitle">Cài đặt</h2>
-          <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Close settings" title="Close settings">&times;</button>
+          <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Đóng cài đặt" title="Đóng cài đặt">&times;</button>
         </div>
         <div id="settingsContent" class="settings-content"></div>
       </section>
     </div>
 
-    <div id="changelogOverlay" class="settings-overlay" hidden aria-hidden="true">
+    <div id="changelogOverlay" class="settings-overlay" hidden>
       <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
         <div class="settings-dialog-heading">
           <h2 id="changelogTitle">Changelog</h2>
           <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Close changelog" title="Close changelog">&times;</button>
         </div>
-        <div id="changelogContent" class="changelog-content" aria-live="polite">Loading GitHub changes...</div>
-        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">View all changes on GitHub</a>
+        <div id="changelogContent" class="changelog-content" aria-live="polite"></div>
+        
       </section>
     </div>
 
-  <script defer src="./app-config.js?v=0.5.37"></script>
-  <script defer src="./localization.js?v=0.5.37"></script>
+  <script defer src="./app-config.js?v=0.5.35"></script>
+  <script defer src="./localization.js?v=0.5.35"></script>
   <script defer src="./team-builder.js?v=0.5.37"></script>
   <script defer src="./app.js?v=0.5.37"></script>
   </body>
