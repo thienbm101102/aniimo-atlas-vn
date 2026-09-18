@@ -9462,3 +9462,75 @@ init().catch((error) => {
   clearSelectionDetails(error.message);
   console.error(error);
 });
+
+/* UI-only ergonomics: drag/wheel scrolling for horizontal tab strips and the layer picker. */
+(() => {
+  function enhanceScrollArea(element, axis = "x") {
+    if (!element || element.dataset.atlasScrollEnhanced === "1") return;
+    element.dataset.atlasScrollEnhanced = "1";
+
+    let dragging = false;
+    let moved = false;
+    let startCoord = 0;
+    let startScroll = 0;
+    let suppressClickUntil = 0;
+
+    const coord = (event) => axis === "x" ? event.clientX : event.clientY;
+    const getScroll = () => axis === "x" ? element.scrollLeft : element.scrollTop;
+    const setScroll = (value) => {
+      if (axis === "x") element.scrollLeft = value;
+      else element.scrollTop = value;
+    };
+
+    element.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      dragging = true;
+      moved = false;
+      startCoord = coord(event);
+      startScroll = getScroll();
+      try { element.setPointerCapture(event.pointerId); } catch (_) { /* no-op */ }
+    });
+
+    element.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      const delta = coord(event) - startCoord;
+      if (Math.abs(delta) > 4) moved = true;
+      if (!moved) return;
+      setScroll(startScroll - delta);
+      event.preventDefault();
+    }, { passive: false });
+
+    const end = (event) => {
+      if (!dragging) return;
+      dragging = false;
+      if (moved) suppressClickUntil = performance.now() + 140;
+      try { element.releasePointerCapture(event.pointerId); } catch (_) { /* no-op */ }
+    };
+
+    element.addEventListener("pointerup", end);
+    element.addEventListener("pointercancel", end);
+    element.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse" && dragging && !element.hasPointerCapture?.(event.pointerId)) end(event);
+    });
+
+    element.addEventListener("click", (event) => {
+      if (performance.now() < suppressClickUntil) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, true);
+
+    element.addEventListener("wheel", (event) => {
+      if (axis === "x" && element.scrollWidth > element.clientWidth) {
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        if (delta !== 0) {
+          element.scrollLeft += delta;
+          event.preventDefault();
+        }
+      }
+    }, { passive: false });
+  }
+
+  enhanceScrollArea(document.querySelector("#workspaceTabs"), "x");
+  enhanceScrollArea(document.querySelector("#layerTabs"), "y");
+})();

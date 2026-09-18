@@ -27,3 +27,7 @@ Bản giao diện tiếng Việt mới dựa trực tiếp trên source MinMax-A
 
 ## GitHub Pages
 Repository có thể publish trực tiếp từ `main` / root. Không cần build step.
+
+
+## UI v10
+Typography uses Be Vietnam Pro + Space Grotesk. Layer/filter cards use container-aware layout so the sidebar remains readable at narrow widths.
