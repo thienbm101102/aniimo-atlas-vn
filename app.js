@@ -2075,6 +2075,9 @@ function openSettings() {
   state.settingsThemeDraft = themeDraftFromPreferences();
   renderSettings();
   els.settingsOverlay.hidden = false;
+  els.settingsOverlay.style.display = "";
+  els.settingsOverlay.style.visibility = "";
+  els.settingsOverlay.style.pointerEvents = "";
   els.settingsButton.setAttribute("aria-expanded", "true");
   window.requestAnimationFrame(() => els.settingsCloseButton.focus());
 }
@@ -2090,6 +2093,11 @@ function closeSettings() {
   state.settingsOpen = false;
   state.settingsThemeDraft = null;
   els.settingsOverlay.hidden = true;
+  // Defensive reset: CSS also enforces [hidden], but this guarantees no stale
+  // inline presentation can keep the overlay interactive after closing.
+  els.settingsOverlay.style.display = "none";
+  els.settingsOverlay.style.visibility = "hidden";
+  els.settingsOverlay.style.pointerEvents = "none";
   els.settingsButton.setAttribute("aria-expanded", "false");
   const focusTarget = state.settingsFocusReturn || els.settingsButton;
   state.settingsFocusReturn = null;

@@ -9080,6 +9080,15 @@ button {
   background: rgba(2, 7, 11, 0.58) !important;
   backdrop-filter: blur(14px) !important;
   z-index: 100 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Hidden must win over the redesigned modal rule above. */
+.settings-overlay[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .settings-dialog {
