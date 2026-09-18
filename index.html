@@ -9,11 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <title>Aniipedia — Cẩm nang Aniimo</title>
-    <link rel="stylesheet" href="./styles.css?v=0.5.41">
-    <link rel="stylesheet" href="./redesign.css?v=20260918-ui-v1">
-    <link rel="stylesheet" href="./redesign-v2.css?v=20260918-ui-v2">
-    <link rel="stylesheet" href="./redesign-v3.css?v=20260918-ui-v3">
-    <link rel="stylesheet" href="./redesign-v4.css?v=20260918-ui-v4">>
+    <link rel="stylesheet" href="./styles.css?v=0.5.42">
+      <link rel="stylesheet" href="./uxui-final.css?v=0.5.42">
   </head>
   <body>
     <main id="appShell" class="app-shell">
@@ -78,7 +75,7 @@
               </div>
               <span id="filterCount" class="filter-count" aria-live="polite">0 / 0</span>
             </div>
-            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Lớp đánh dấu"></div>
+            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Marker layers"></div>
             <div id="itemList" class="item-list"></div>
           </section>
         </div>
@@ -86,7 +83,7 @@
         <section id="trackingWorkspace" class="tracking-workspace" role="tabpanel" aria-labelledby="trackingWorkspaceTab" hidden>
           <div class="panel-heading">
             <h2>Theo dõi hồi sinh</h2>
-            <span id="trackingCount" class="filter-count" aria-live="polite">0 đang theo dõi</span>
+            <span id="trackingCount" class="filter-count" aria-live="polite">0 tracked</span>
           </div>
           <div id="trackingList" class="tracking-list"></div>
         </section>
@@ -94,7 +91,7 @@
         <section id="checklistWorkspace" class="checklist-workspace" role="tabpanel" aria-labelledby="checklistWorkspaceTab" hidden>
           <div class="panel-heading">
             <h2>Checklist</h2>
-            <span id="checklistCount" class="filter-count" aria-live="polite">Đang tải</span>
+            <span id="checklistCount" class="filter-count" aria-live="polite">Loading</span>
           </div>
           <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Checklist categories"></div>
           <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Lumin checklist sources" hidden></div>
@@ -133,10 +130,10 @@
           <span aria-hidden="true">&lsaquo;</span>
         </button>
         <div id="mapSurface" class="map-surface">
-          <div class="map-visual-ribbon" aria-hidden="true"><strong>Khám phá Aniimo</strong><span>Bản đồ · Ghim · Theo dõi</span></div>
+          <div class="map-visual-ribbon" aria-hidden="true"><strong>Aniimo Explorer</strong><span>Khám phá · Ghim · Theo dõi</span></div>
           <div class="map-toolbar">
-            <button id="zoomOutButton" type="button" aria-label="Thu nhỏ bản đồ">-</button>
-            <button id="zoomInButton" type="button" aria-label="Phóng to bản đồ">+</button>
+            <button id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
+            <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
             <button id="fitButton" type="button">Vừa khung</button>
           </div>
           <div class="map-readout-cluster">
@@ -164,7 +161,7 @@
               <h2>Chi tiết đã chọn</h2>
               <div class="mobile-selection-actions">
                 <button id="mobileSelectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
-                <button id="mobileSelectionToggle" class="mobile-selection-toggle" type="button" aria-controls="mobileSelectionDetail" aria-expanded="false" aria-label="Mở rộng chi tiết" title="Mở rộng chi tiết">+</button>
+                <button id="mobileSelectionToggle" class="mobile-selection-toggle" type="button" aria-controls="mobileSelectionDetail" aria-expanded="false" aria-label="Expand selection" title="Expand selection">+</button>
                 <button id="mobileSelectionCloseButton" class="selection-close-button mobile-selection-close-button" type="button" aria-label="Đóng chi tiết" title="Đóng chi tiết">&times;</button>
               </div>
             </div>
@@ -179,8 +176,8 @@
     <div id="settingsOverlay" class="settings-overlay" hidden>
       <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="settings-dialog-heading">
-          <h2 id="settingsTitle">Cài đặt</h2>
-          <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Đóng cài đặt" title="Đóng cài đặt">&times;</button>
+          <h2 id="settingsTitle">Settings</h2>
+          <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Close settings" title="Close settings">&times;</button>
         </div>
         <div id="settingsContent" class="settings-content"></div>
       </section>
@@ -189,17 +186,17 @@
     <div id="changelogOverlay" class="settings-overlay" hidden>
       <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
         <div class="settings-dialog-heading">
-          <h2 id="changelogTitle">Lịch sử thay đổi</h2>
-          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng lịch sử thay đổi" title="Đóng lịch sử thay đổi">&times;</button>
+          <h2 id="changelogTitle">Changelog</h2>
+          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Close changelog" title="Close changelog">&times;</button>
         </div>
-        <div id="changelogContent" class="changelog-content" aria-live="polite">Đang tải lịch sử thay đổi...</div>
-        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">Xem toàn bộ thay đổi trên GitHub</a>
+        <div id="changelogContent" class="changelog-content" aria-live="polite">Loading GitHub changes...</div>
+        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">View all changes on GitHub</a>
       </section>
     </div>
 
-  <script defer src="./app-config.js?v=0.5.41"></script>
-  <script defer src="./localization.js?v=0.5.41"></script>
-  <script defer src="./team-builder.js?v=0.5.41"></script>
-  <script defer src="./app.js?v=0.5.41"></script>
+  <script defer src="./app-config.js?v=0.5.42"></script>
+  <script defer src="./localization.js?v=0.5.42"></script>
+  <script defer src="./team-builder.js?v=0.5.42"></script>
+  <script defer src="./app.js?v=0.5.42"></script>
   </body>
 </html>
