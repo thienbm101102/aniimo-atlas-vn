@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090d14">
+  <meta name="description" content="Aniimo Atlas VN — bản đồ tương tác và cơ sở dữ liệu Aniimo tiếng Việt dựa trên cấu trúc dữ liệu MinMax-Aniipedia.">
+  <title>Aniimo Atlas VN</title>
+  <link rel="icon" href="assets/aniilog/element-fire.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="stylesheet" href="styles-vn.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-title">Aniimo Atlas</div>
+          <div class="brand-subtitle">Bản đồ & dữ liệu VN</div>
+        </div>
+      </div>
+      <nav class="nav-tabs" aria-label="Điều hướng">
+        <button class="nav-btn active" data-view="map"><span>⌖</span><b>Bản đồ</b></button>
+        <button class="nav-btn" data-view="aniimo"><span>◉</span><b>Aniimo</b></button>
+        <button class="nav-btn" data-view="items"><span>▦</span><b>Kho dữ liệu</b></button>
+        <button class="nav-btn" data-view="checklist"><span>✓</span><b>Checklist</b></button>
+      </nav>
+      <div class="side-section">
+        <div class="section-kicker">BẢN ĐỒ</div>
+        <div id="mapList" class="map-list"></div>
+      </div>
+      <div class="side-foot">
+        <div class="source-badge">DATA SCHEMA · MINMAX</div>
+        <div class="muted">Dữ liệu trong <code>data/</code> và <code>assets/</code> được giữ nguyên cấu trúc gốc.</div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="sidebarToggle" title="Menu">☰</button>
+        <div class="topbar-search">
+          <span class="search-icon">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Tìm Aniimo, vật phẩm, khu vực, tọa độ…" autocomplete="off">
+          <kbd>Ctrl K</kbd>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="shareBtn" title="Chia sẻ bản đồ">⤴</button>
+          <button class="icon-btn" id="fullscreenBtn" title="Toàn màn hình">⛶</button>
+          <button class="profile-chip" id="resetBtn" title="Xóa bộ lọc / về mặc định">VN</button>
+        </div>
+      </header>
+
+      <section class="view map-view" id="view-map">
+        <div class="map-toolbar">
+          <div class="map-title-wrap">
+            <div class="eyebrow">BẢN ĐỒ TƯƠNG TÁC</div>
+            <h1 id="mapTitle">Breezy Plains</h1>
+            <div id="mapMeta" class="muted"></div>
+          </div>
+          <div class="map-actions">
+            <div class="segmented" id="mapSwitch"></div>
+            <button class="ghost-btn" id="fitBtn">⤢ Vừa khung</button>
+            <button class="ghost-btn" id="locateBtn">⌖ Tâm bản đồ</button>
+          </div>
+        </div>
+
+        <div class="map-layout">
+          <section class="map-panel">
+            <div class="map-stage" id="mapStage">
+              <div class="map-world" id="mapWorld">
+                <img id="mapImage" class="map-image" alt="Bản đồ Aniimo">
+                <canvas id="markerCanvas"></canvas>
+                <div class="map-crosshair" id="mapCrosshair"></div>
+              </div>
+              <div class="map-overlay top-left">
+                <div class="coordinate-readout" id="coordReadout">X 0 · Y 0</div>
+              </div>
+              <div class="map-overlay top-right toolbar-stack">
+                <button class="map-tool" id="zoomInBtn">＋</button>
+                <button class="map-tool" id="zoomOutBtn">－</button>
+              </div>
+              <div class="map-overlay bottom-left">
+                <div class="map-legend" id="mapLegend"></div>
+              </div>
+              <div class="map-overlay bottom-right">
+                <button class="map-tool wide" id="layersBtn">☷ Lớp</button>
+              </div>
+            </div>
+            <div class="map-statusbar">
+              <div id="markerStatus">Đang tải marker…</div>
+              <div class="map-status-actions">
+                <button class="text-btn" id="clearPinsBtn">Bỏ ghim</button>
+                <button class="text-btn" id="exportPinsBtn">Xuất ghim</button>
+              </div>
+            </div>
+          </section>
+
+          <aside class="map-drawer" id="mapDrawer">
+            <div class="drawer-header">
+              <div>
+                <div class="eyebrow">BỘ LỌC</div>
+                <h2>Lớp bản đồ</h2>
+              </div>
+              <button class="icon-btn" id="closeDrawerBtn">×</button>
+            </div>
+            <div class="drawer-actions">
+              <button class="small-btn" id="selectAllBtn">Chọn tất cả</button>
+              <button class="small-btn" id="clearAllBtn">Bỏ tất cả</button>
+            </div>
+            <div class="filter-search"><input id="layerSearch" type="search" placeholder="Lọc lớp…"></div>
+            <div id="layerList" class="layer-list"></div>
+          </aside>
+
+          <aside class="detail-panel" id="detailPanel">
+            <div class="detail-empty" id="detailEmpty">
+              <div class="empty-icon">⌖</div>
+              <h3>Chọn một marker</h3>
+              <p>Nhấp vào điểm trên bản đồ để xem chi tiết, tọa độ và khu vực.</p>
+            </div>
+            <div id="detailContent" hidden></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view data-view" id="view-aniimo" hidden>
+        <div class="data-head">
+          <div><div class="eyebrow">ANIILOG</div><h1>Danh mục Aniimo</h1><div class="muted" id="aniimoCount"></div></div>
+          <div class="filter-row"><input id="aniimoSearch" class="field" placeholder="Tìm Aniimo…"><select id="roleFilter" class="field"><option value="">Tất cả vai trò</option></select><select id="elementFilter" class="field"><option value="">Tất cả nguyên tố</option></select></div>
+        </div>
+        <div id="aniimoGrid" class="card-grid"></div>
+      </section>
+
+      <section class="view data-view" id="view-items" hidden>
+        <div class="data-head"><div><div class="eyebrow">CATALOG INDEX</div><h1>Kho dữ liệu</h1><div class="muted" id="itemCount"></div></div><div class="filter-row"><input id="itemSearch" class="field" placeholder="Tìm vật phẩm…"><select id="itemCategoryFilter" class="field"><option value="">Tất cả danh mục</option></select></div></div>
+        <div id="itemGrid" class="item-grid"></div>
+      </section>
+
+      <section class="view data-view" id="view-checklist" hidden>
+        <div class="data-head"><div><div class="eyebrow">PROGRESS</div><h1>Checklist</h1><div class="muted" id="checklistSummary"></div></div><div class="filter-row"><input id="checkSearch" class="field" placeholder="Tìm mục…"><select id="checkCategory" class="field"><option value="">Tất cả</option></select></div></div>
+        <div id="checklistList" class="checklist"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app-vn.js"></script>
+</body>
+</html>
