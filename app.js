@@ -5,8 +5,6 @@ const ITEMLOG_DATA_URL =
   "./data/itemlog_data.json?v=20260725-catalog-v003";
 const ANIILOG_DATA_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
 const APP_VERSION = "v0.5.37";
-const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
-const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
 const ANIILOG_EXPANDED_GROUPS_STORAGE_KEY = "minmax-aniilog-expanded-groups-v1";
 const TRACKING_TICK_MS = 1000;
 const LOCAL_TRACKING_STORAGE_KEY = "minmax-map:tracking:v1";
@@ -366,9 +364,6 @@ const state = {
   settingsFocusReturn: null,
   settingsThemeDraft: null,
   settingsActiveTab: "general",
-  changelogOpen: false,
-  changelogFocusReturn: null,
-  changelogLoadToken: 0,
   tracking: new Map(),
   completed: new Set(),
   checklistData: null,
@@ -451,9 +446,6 @@ const els = {
   sidebarRestoreButton: document.querySelector("#sidebarRestoreButton"),
   settingsOverlay: document.querySelector("#settingsOverlay"),
   settingsCloseButton: document.querySelector("#settingsCloseButton"),
-  changelogOverlay: document.querySelector("#changelogOverlay"),
-  changelogCloseButton: document.querySelector("#changelogCloseButton"),
-  changelogContent: document.querySelector("#changelogContent"),
   mapWorkspace: document.querySelector("#mapWorkspace"),
   trackingWorkspace: document.querySelector("#trackingWorkspace"),
   checklistWorkspace: document.querySelector("#checklistWorkspace"),
@@ -2101,86 +2093,6 @@ function closeSettings() {
   els.settingsButton.setAttribute("aria-expanded", "false");
   const focusTarget = state.settingsFocusReturn || els.settingsButton;
   state.settingsFocusReturn = null;
-  focusTarget.focus();
-}
-
-const LOCAL_CHANGELOG = [
-  { version: "v0.5.37", date: "2026-09-18", title: "Aniimo Atlas VN", details: [
-    "Làm mới hệ thống UX/UI theo phong cách Aniimo Atlas VN.",
-    "Giữ nguyên dữ liệu bản đồ, marker, catalog, checklist và Aniilog từ source nền.",
-    "Bộ lọc lớp bản đồ mặc định tắt, người chơi tự chọn lớp muốn hiển thị.",
-    "Popup marker hiển thị artwork và thông tin chi tiết ngay trong bản đồ.",
-    "Thay lịch sử thay đổi online bằng changelog cục bộ để không phụ thuộc GitHub API."
-  ]},
-  { version: "v0.5.36", date: "2026-09-18", title: "Map & filtering", details: [
-    "Bổ sung thẻ lớp có hình ảnh, số lượng marker và trạng thái bật/tắt.",
-    "Tinh chỉnh hiển thị map selector và giao diện responsive."
-  ]}
-];
-
-function renderLocalChangelog() {
-  const fragment = document.createDocumentFragment();
-  LOCAL_CHANGELOG.forEach((entry) => {
-    const article = document.createElement("article");
-    article.className = "changelog-release";
-
-    const header = document.createElement("header");
-    const heading = document.createElement("div");
-    const title = document.createElement("strong");
-    title.textContent = `${entry.version} · ${entry.title}`;
-    heading.append(title);
-
-    const time = document.createElement("time");
-    const date = new Date(`${entry.date}T00:00:00`);
-    if (!Number.isNaN(date.getTime())) {
-      time.dateTime = entry.date;
-      time.textContent = new Intl.DateTimeFormat("vi-VN", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }).format(date);
-    }
-    header.append(heading, time);
-
-    const list = document.createElement("ul");
-    for (const detail of entry.details) {
-      const item = document.createElement("li");
-      item.textContent = detail;
-      list.append(item);
-    }
-
-    article.append(header, list);
-    fragment.append(article);
-  });
-
-  els.changelogContent.replaceChildren(fragment);
-}
-
-function loadLocalChangelog() {
-  state.changelogLoadToken += 1;
-  els.changelogContent.classList.remove("changelog-error");
-  renderLocalChangelog();
-}
-
-function openChangelog() {
-  if (state.changelogOpen) return;
-  state.changelogOpen = true;
-  state.changelogFocusReturn = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  els.changelogOverlay.hidden = false;
-  els.appVersion.setAttribute("aria-expanded", "true");
-  els.changelogContent.classList.remove("changelog-error");
-  loadLocalChangelog();
-  window.requestAnimationFrame(() => els.changelogCloseButton.focus());
-}
-
-function closeChangelog() {
-  if (!state.changelogOpen) return;
-  state.changelogOpen = false;
-  state.changelogLoadToken += 1;
-  els.changelogOverlay.hidden = true;
-  els.appVersion.setAttribute("aria-expanded", "false");
-  const focusTarget = state.changelogFocusReturn || els.appVersion;
-  state.changelogFocusReturn = null;
   focusTarget.focus();
 }
 
@@ -9279,15 +9191,10 @@ function bindEvents() {
   els.aniilogWorkspaceTab.addEventListener("click", () => setSidebarView("aniilog"));
   els.itemlogWorkspaceTab.addEventListener("click", () => setSidebarView("itemlog"));
   els.teamWorkspaceTab.addEventListener("click", () => setSidebarView("team"));
-  els.appVersion.addEventListener("click", openChangelog);
   els.settingsButton.addEventListener("click", openSettings);
   els.settingsCloseButton.addEventListener("click", closeSettings);
   els.settingsOverlay.addEventListener("click", (event) => {
     if (event.target === els.settingsOverlay) closeSettings();
-  });
-  els.changelogCloseButton.addEventListener("click", closeChangelog);
-  els.changelogOverlay.addEventListener("click", (event) => {
-    if (event.target === els.changelogOverlay) closeChangelog();
   });
   els.workspaceTabs.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
@@ -9304,11 +9211,9 @@ function bindEvents() {
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.settingsOpen) closeSettings();
-    if (event.key === "Escape" && state.changelogOpen) closeChangelog();
     if (
       event.key === "Escape"
       && !state.settingsOpen
-      && !state.changelogOpen
       && state.selectedSpawnIndex !== null
     ) {
       dismissSelection();

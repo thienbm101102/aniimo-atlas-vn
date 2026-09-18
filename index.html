@@ -13,7 +13,7 @@
         <header class="brand">
           <div class="brand-copy">
             <h1>Aniimo Atlas VN</h1><p class="brand-tagline">ATLAS VIỆT NAM • BẢN ĐỒ • SƯU TẬP • ANIILOG</p>
-            <button id="appVersion" class="app-version app-version-button" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false">Version loading</button>
+            <span id="appVersion" class="app-version" aria-label="Phiên bản ứng dụng">Version loading</span>
             <p id="mapMeta" class="database-meta">Đang tải cơ sở dữ liệu…</p>
           </div>
           <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Open settings" title="Settings">
@@ -167,15 +167,6 @@
       </section>
     </div>
 
-    <div id="changelogOverlay" class="settings-overlay" hidden>
-      <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
-        <div class="settings-dialog-heading">
-          <h2 id="changelogTitle">Lịch sử thay đổi</h2>
-          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng lịch sử thay đổi" title="Đóng lịch sử thay đổi">&times;</button>
-        </div>
-        <div id="changelogContent" class="changelog-content" aria-live="polite">Đang tải lịch sử thay đổi…</div>
-      </section>
-    </div>
 
   <script defer src="./app-config.js?v=1.0.0-v4"></script>
   <script defer src="./localization.js?v=1.0.0-v4"></script>
