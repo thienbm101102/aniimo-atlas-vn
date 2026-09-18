@@ -6192,7 +6192,7 @@ function renderChecklistRow(entry) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "checklist-locate";
-    locate.textContent = "Locate";
+    locate.textContent = "Định vị trên bản đồ";
     locate.addEventListener("click", () => {
       void locateChecklistLuminEntry(entry);
     });
@@ -8286,6 +8286,18 @@ function refreshVisibility() {
   stabilizeViewport();
 }
 
+function vietnameseLayerLabel(layer) {
+  const labels = {
+    items: "Vật phẩm",
+    aniimo: "Aniimo",
+    eggs: "Trứng",
+    teleports: "Dịch chuyển",
+    ambers: "Lumen",
+    misc: "Khác",
+  };
+  return labels[layer?.id] || window.AniipediaI18n?.translate?.(layer?.label || "") || layer?.label || "Lớp";
+}
+
 function renderItems() {
   els.layerTabs.textContent = "";
   els.itemList.textContent = "";
@@ -8345,7 +8357,7 @@ function renderItems() {
     const tabCopy = document.createElement("span");
     tabCopy.className = "layer-tab-copy";
     const tabLabel = document.createElement("strong");
-    tabLabel.textContent = layer.label;
+    tabLabel.textContent = vietnameseLayerLabel(layer);
     const tabMeta = document.createElement("small");
     tabMeta.textContent = `${layer.entry_count || layerItems.length || 0} loại · ${layer.spawn_count || 0} vị trí`;
     tabCopy.append(tabLabel, tabMeta);
@@ -8867,15 +8879,15 @@ function renderSelectionDetail(detail, spawn, item) {
   const formValue = spawn.form_label || item.form_label;
   const regionValue = regionDetailValue(spawn);
   const rows = [
-    ["Type", typeLabel],
-    spawn.document_group ? ["Series", spawn.document_group] : null,
-    spawn.collectible_group ? ["Series", spawn.collectible_group] : null,
-    formValue ? ["Form", formValue] : null,
+    ["Loại", typeLabel],
+    spawn.document_group ? ["Bộ", spawn.document_group] : null,
+    spawn.collectible_group ? ["Bộ", spawn.collectible_group] : null,
+    formValue ? ["Hình thái", formValue] : null,
     ["X", formatCoordinate(spawn.x), formatCoordinate(spawn.x)],
     ["Y", formatCoordinate(spawn.y), formatCoordinate(spawn.y)],
-    ["Height", formatNumber(spawn.height_y, 2)],
-    areaValue ? ["Area", areaValue] : null,
-    regionValue ? ["Region", regionValue] : null,
+    ["Độ cao", formatNumber(spawn.height_y, 2)],
+    areaValue ? ["Khu vực", areaValue] : null,
+    regionValue ? ["Vùng", regionValue] : null,
   ].filter((row) => row && row[1]);
   rows.forEach(([label, value, copyValue]) => {
     const left = document.createElement("span");
@@ -8950,10 +8962,10 @@ function renderSelectionDetail(detail, spawn, item) {
     track.type = "button";
     track.className = "track-selection-button";
     if (state.tracking.has(trackingId)) {
-      track.textContent = "Open Tracking";
+      track.textContent = "Mở theo dõi";
       track.addEventListener("click", () => setSidebarView("tracking"));
     } else {
-      track.textContent = "Track Respawn";
+      track.textContent = "Theo dõi hồi sinh";
       track.addEventListener("click", () => {
         addTrackingForSpawn(spawn, item);
       });
