@@ -5,7 +5,6 @@ const ITEMLOG_DATA_URL =
   "./data/itemlog_data.json?v=20260725-catalog-v003";
 const ANIILOG_DATA_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
 const APP_VERSION = "v0.5.37";
-const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
 const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
 const ANIILOG_EXPANDED_GROUPS_STORAGE_KEY = "minmax-aniilog-expanded-groups-v1";
@@ -2105,65 +2104,62 @@ function closeSettings() {
   focusTarget.focus();
 }
 
-function renderGitHubChangelog(commits) {
+const LOCAL_CHANGELOG = [
+  { version: "v0.5.37", date: "2026-09-18", title: "Aniimo Atlas VN", details: [
+    "Làm mới hệ thống UX/UI theo phong cách Aniimo Atlas VN.",
+    "Giữ nguyên dữ liệu bản đồ, marker, catalog, checklist và Aniilog từ source nền.",
+    "Bộ lọc lớp bản đồ mặc định tắt, người chơi tự chọn lớp muốn hiển thị.",
+    "Popup marker hiển thị artwork và thông tin chi tiết ngay trong bản đồ.",
+    "Thay lịch sử thay đổi online bằng changelog cục bộ để không phụ thuộc GitHub API."
+  ]},
+  { version: "v0.5.36", date: "2026-09-18", title: "Map & filtering", details: [
+    "Bổ sung thẻ lớp có hình ảnh, số lượng marker và trạng thái bật/tắt.",
+    "Tinh chỉnh hiển thị map selector và giao diện responsive."
+  ]}
+];
+
+function renderLocalChangelog() {
   const fragment = document.createDocumentFragment();
-  const publicCommits = commits
-    .filter((entry) => !CHANGELOG_INTERNAL_MARKER_RE.test(String(entry?.commit?.message || "")))
-    .slice(0, CHANGELOG_PUBLIC_ENTRY_LIMIT);
-  publicCommits.forEach((entry) => {
-    const commit = entry?.commit || {};
-    const subject = String(commit.message || "GitHub update").split(/\r?\n/, 1)[0];
-    const sha = String(entry?.sha || "").slice(0, 7);
-    const url = String(entry?.html_url || "");
-    const dateValue = commit?.committer?.date || commit?.author?.date || "";
-    const date = dateValue ? new Date(dateValue) : null;
+  LOCAL_CHANGELOG.forEach((entry) => {
     const article = document.createElement("article");
     article.className = "changelog-release";
+
     const header = document.createElement("header");
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noreferrer";
-    link.textContent = subject;
-    link.title = "View this commit diff on GitHub";
+    const heading = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = `${entry.version} · ${entry.title}`;
+    heading.append(title);
+
     const time = document.createElement("time");
-    if (date && !Number.isNaN(date.getTime())) {
-      time.dateTime = date.toISOString();
-      time.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+    const date = new Date(`${entry.date}T00:00:00`);
+    if (!Number.isNaN(date.getTime())) {
+      time.dateTime = entry.date;
+      time.textContent = new Intl.DateTimeFormat("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(date);
     }
-    header.append(link, time);
-    const metadata = document.createElement("p");
-    metadata.className = "changelog-commit-sha";
-    metadata.textContent = sha ? `Commit ${sha}` : "GitHub commit";
-    article.append(header, metadata);
+    header.append(heading, time);
+
+    const list = document.createElement("ul");
+    for (const detail of entry.details) {
+      const item = document.createElement("li");
+      item.textContent = detail;
+      list.append(item);
+    }
+
+    article.append(header, list);
     fragment.append(article);
   });
-  if (!publicCommits.length) {
-    const empty = document.createElement("p");
-    empty.textContent = "No published changes are available.";
-    fragment.append(empty);
-  }
+
   els.changelogContent.replaceChildren(fragment);
 }
 
-async function loadGitHubChangelog() {
-  const token = ++state.changelogLoadToken;
-  els.changelogContent.textContent = "Loading GitHub changes...";
-  try {
-    const response = await fetch(GITHUB_COMMITS_URL, {
-      cache: "no-store",
-      headers: { Accept: "application/vnd.github+json" },
-    });
-    if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
-    const commits = await response.json();
-    if (token !== state.changelogLoadToken) return;
-    if (!Array.isArray(commits) || !commits.length) throw new Error("No commits were returned");
-    renderGitHubChangelog(commits);
-  } catch (error) {
-    if (token !== state.changelogLoadToken) return;
-    els.changelogContent.textContent = "The changelog is unavailable right now. You can still view all changes on GitHub.";
-    els.changelogContent.classList.add("changelog-error");
-  }
+function loadLocalChangelog() {
+  state.changelogLoadToken += 1;
+  els.changelogContent.classList.remove("changelog-error");
+  renderLocalChangelog();
 }
 
 function openChangelog() {
@@ -2173,7 +2169,7 @@ function openChangelog() {
   els.changelogOverlay.hidden = false;
   els.appVersion.setAttribute("aria-expanded", "true");
   els.changelogContent.classList.remove("changelog-error");
-  void loadGitHubChangelog();
+  loadLocalChangelog();
   window.requestAnimationFrame(() => els.changelogCloseButton.focus());
 }
 
