@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#1a1f22">
     <title>Aniimo Atlas VN — Bản đồ &amp; Aniimo</title>
-    <link rel="stylesheet" href="./styles.css?v=aurora-v8"><link rel="stylesheet" href="./atlas-vn-ui.css?v=aurora-v8">
+    <link rel="stylesheet" href="./styles.css?v=0.5.37"><link rel="stylesheet" href="./atlas-vn-ui.css?v=9">
   </head>
   <body>
     <main id="appShell" class="app-shell">
       <aside id="sidebar" class="sidebar" aria-label="Điều khiển bản đồ và tiến trình">
         <header class="brand">
           <div class="brand-copy">
-            <h1>MinMax's Aniipedia</h1>
-            <span id="appVersion" class="app-version app-version-button" aria-hidden="true">v0.5.37</span>
-            <p id="mapMeta" class="database-meta">Database loading</p>
+            <h1>Aniimo Atlas VN</h1>
+            <button id="appVersion" class="app-version app-version-button" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false">v0.5.37</button>
+            <p id="mapMeta" class="database-meta">BẢN ĐỒ CỘNG ĐỒNG • ANIIMO</p>
           </div>
           <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">
             <svg class="settings-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
@@ -51,16 +51,16 @@
             <div class="panel-heading">
               <div class="filter-heading-title">
                 <h2>Lớp hiển thị</h2>
-                <button class="filter-shortcut-info" type="button" aria-label="Filter shortcuts" aria-describedby="filterShortcutTooltip">i</button>
+                <button class="filter-shortcut-info" type="button" aria-label="Phím tắt bộ lọc" aria-describedby="filterShortcutTooltip">i</button>
                 <div id="filterShortcutTooltip" class="filter-shortcut-tooltip" role="tooltip">
-                  <strong>Map shortcuts</strong>
-                  <span>Double-click a filter tab to select every result currently shown in that tab.</span>
-                  <span>Right-click a map icon to deselect that location and remove its pin.</span>
+                  <strong>Phím tắt bản đồ</strong>
+                  <span>Nhấp đúp vào một lớp để chọn toàn bộ kết quả đang hiển thị.</span>
+                  <span>Nhấp chuột phải vào marker để bỏ chọn vị trí và xóa ghim.</span>
                 </div>
               </div>
               <span id="filterCount" class="filter-count" aria-live="polite">0 / 0</span>
             </div>
-            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Marker layers"></div>
+            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Các lớp marker"></div>
             <div id="itemList" class="item-list"></div>
           </section>
         </div>
@@ -76,12 +76,12 @@
         <section id="checklistWorkspace" class="checklist-workspace" role="tabpanel" aria-labelledby="checklistWorkspaceTab" hidden>
           <div class="panel-heading">
             <h2>Checklist</h2>
-            <span id="checklistCount" class="filter-count" aria-live="polite">Đang tải</span>
+            <span id="checklistCount" class="filter-count" aria-live="polite">Loading</span>
           </div>
           <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Checklist categories"></div>
           <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Lumin checklist sources" hidden></div>
           <label class="search-label" for="checklistSearchInput">Tìm kiếm</label>
-          <input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc khu vực">
+          <input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, form, or location">
           <div id="checklistList" class="checklist-list" aria-live="polite"></div>
         </section>
 
@@ -95,35 +95,35 @@
 
         <section id="desktopSelectionPanel" class="panel detail-panel" aria-live="polite" hidden>
           <div class="panel-heading">
-            <h2>Selection</h2>
+            <h2>Chi tiết đã chọn</h2>
             <div class="selection-heading-actions">
               <button id="selectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
-              <button id="desktopSelectionToggle" class="selection-minimize-button" type="button" aria-controls="selectionDetail" aria-expanded="true" aria-label="Minimize selection" title="Minimize selection">&minus;</button>
-              <button id="selectionCloseButton" class="selection-close-button" type="button" aria-label="Close selection" title="Close selection">&times;</button>
+              <button id="desktopSelectionToggle" class="selection-minimize-button" type="button" aria-controls="selectionDetail" aria-expanded="true" aria-label="Thu gọn chi tiết" title="Minimize selection">&minus;</button>
+              <button id="selectionCloseButton" class="selection-close-button" type="button" aria-label="Đóng chi tiết" title="Close selection">&times;</button>
             </div>
           </div>
           <div id="selectionDetail" class="selection empty">No marker selected</div>
         </section>
       </aside>
 
-      <button id="sidebarRestoreButton" class="sidebar-restore-button" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Show sidebar" title="Show sidebar" hidden>
+      <button id="sidebarRestoreButton" class="sidebar-restore-button" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Hiện thanh bên" title="Hiện thanh bên" hidden>
         <span aria-hidden="true">&rsaquo;</span>
       </button>
 
       <section class="map-panel" aria-label="Interactive map and catalogue">
-        <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn thanh bên" title="Thu gọn thanh bên">
           <span aria-hidden="true">&lsaquo;</span>
         </button>
         <div id="mapSurface" class="map-surface">
           <div class="map-toolbar">
-            <button id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
-            <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+            <button id="zoomOutButton" type="button" aria-label="Thu nhỏ">-</button>
+            <button id="zoomInButton" type="button" aria-label="Phóng to">+</button>
             <button id="fitButton" type="button">Fit</button>
           </div>
           <div class="map-readout-cluster">
             <button id="undergroundPlanToggle" class="map-underground-plan-toggle" type="button" aria-label="Switch underground area" title="Switch underground area" hidden>
               <span>Area</span>
-              <strong id="undergroundPlanToggleLabel">All</strong>
+              <strong id="undergroundPlanToggleLabel">Bật tất cả</strong>
             </button>
             <button id="undergroundLayerToggle" class="map-layer-toggle" type="button" aria-pressed="false" aria-label="Show underground map" title="Show underground map" hidden>
               <img id="undergroundLayerToggleIcon" src="./assets/icons/map-layer-underground-off.png" alt="">
@@ -142,11 +142,11 @@
           </div>
           <section id="mobileSelectionPanel" class="panel mobile-selection-panel is-minimized" aria-live="polite" hidden>
             <div class="panel-heading mobile-selection-heading">
-              <h2>Selection</h2>
+              <h2>Chi tiết đã chọn</h2>
               <div class="mobile-selection-actions">
                 <button id="mobileSelectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
                 <button id="mobileSelectionToggle" class="mobile-selection-toggle" type="button" aria-controls="mobileSelectionDetail" aria-expanded="false" aria-label="Expand selection" title="Expand selection">+</button>
-                <button id="mobileSelectionCloseButton" class="selection-close-button mobile-selection-close-button" type="button" aria-label="Close selection" title="Close selection">&times;</button>
+                <button id="mobileSelectionCloseButton" class="selection-close-button mobile-selection-close-button" type="button" aria-label="Đóng chi tiết" title="Close selection">&times;</button>
               </div>
             </div>
             <div id="mobileSelectionDetail" class="selection empty">No marker selected</div>
@@ -167,11 +167,11 @@
       </section>
     </div>
 
-    <div id="changelogOverlay" class="settings-overlay" hidden>
+    <div id="changelogOverlay" class="settings-overlay" hidden data-legacy-changelog="true">
       <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
         <div class="settings-dialog-heading">
-          <h2 id="changelogTitle">Changelog</h2>
-          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Close changelog" title="Close changelog">&times;</button>
+          <h2 id="changelogTitle">Nhật ký</h2>
+          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng nhật ký" title="Đóng nhật ký">&times;</button>
         </div>
         <div id="changelogContent" class="changelog-content" aria-live="polite"></div>
         
@@ -180,6 +180,7 @@
 
   <script defer src="./app-config.js?v=0.5.35"></script>
   <script defer src="./localization.js?v=0.5.35"></script>
+  <script defer src="./localization-vi.js?v=9"></script>
   <script defer src="./team-builder.js?v=0.5.37"></script>
   <script defer src="./app.js?v=0.5.37"></script>
   </body>

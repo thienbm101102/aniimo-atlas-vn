@@ -12,7 +12,8 @@ const ANIILOG_EXPANDED_GROUPS_STORAGE_KEY = "minmax-aniilog-expanded-groups-v1";
 const TRACKING_TICK_MS = 1000;
 const LOCAL_TRACKING_STORAGE_KEY = "minmax-map:tracking:v1";
 const LOCAL_COMPLETION_STORAGE_KEY = "minmax-map:completed:v1";
-const LOCAL_PREFERENCES_STORAGE_KEY = "minmax-map:preferences:v1";
+const LOCAL_PREFERENCES_STORAGE_KEY = "minmax-map:preferences:v2";
+const LEGACY_PREFERENCES_STORAGE_KEY = "minmax-map:preferences:v1";
 const MIN_SCALE = 0.03;
 const MAX_SCALE = 16;
 const MAP_EDGE_MARGIN = 48;
@@ -282,7 +283,7 @@ const THEME_PRESETS = Object.freeze({
 const DEFAULT_CUSTOM_THEME = Object.freeze({ ...THEME_PRESETS.emberpup.colors });
 const DEFAULT_PREFERENCES = Object.freeze({
   showMagicAttack: false,
-  language: "en",
+  language: "vi",
   theme: "default",
   mapSelectionPlacement: "top-right",
   mapSelectionDefaultState: "expanded",
@@ -1309,10 +1310,13 @@ function loadLocalTracking() {
   try {
     const rawTracking = window.localStorage.getItem(LOCAL_TRACKING_STORAGE_KEY);
     const rawCompleted = window.localStorage.getItem(LOCAL_COMPLETION_STORAGE_KEY);
-    const rawPreferences = window.localStorage.getItem(LOCAL_PREFERENCES_STORAGE_KEY);
+    const rawPreferencesV2 = window.localStorage.getItem(LOCAL_PREFERENCES_STORAGE_KEY);
+    const rawPreferencesV1 = window.localStorage.getItem(LEGACY_PREFERENCES_STORAGE_KEY);
+    const rawPreferences = rawPreferencesV2 || rawPreferencesV1;
+    const preferences = rawPreferences ? JSON.parse(rawPreferences) : {};
+    const isLegacyPreference = !rawPreferencesV2 && Boolean(rawPreferencesV1);
     const trackingEntries = rawTracking ? JSON.parse(rawTracking) : [];
     const completedEntries = rawCompleted ? JSON.parse(rawCompleted) : [];
-    const preferences = rawPreferences ? JSON.parse(rawPreferences) : {};
     const normalizedTracking = Array.isArray(trackingEntries)
       ? trackingEntries.map(normalizeTrackingEntry).filter(Boolean)
       : [];
@@ -1323,7 +1327,7 @@ function loadLocalTracking() {
     state.preferences = {
       ...defaultPreferences(),
       showMagicAttack: Boolean(preferences?.showMagicAttack),
-      language: window.AniipediaI18n.normalizeLocale(preferences?.language),
+      language: isLegacyPreference ? "vi" : window.AniipediaI18n.normalizeLocale(preferences?.language),
       theme: normalizeThemeId(preferences?.theme),
       mapSelectionPlacement: normalizeDesktopSelectionPlacement(preferences?.mapSelectionPlacement),
       mapSelectionDefaultState: normalizeSelectionDefaultState(preferences?.mapSelectionDefaultState),
@@ -2167,16 +2171,9 @@ async function loadGitHubChangelog() {
 }
 
 function openChangelog() {
-  if (state.changelogOpen) return;
-  state.changelogOpen = true;
-  state.changelogFocusReturn = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-  els.changelogOverlay.hidden = false;
-  els.appVersion.setAttribute("aria-expanded", "true");
-  els.changelogContent.classList.remove("changelog-error");
-  void loadGitHubChangelog();
-  window.requestAnimationFrame(() => els.changelogCloseButton.focus());
+  // Aniimo Atlas VN keeps changelog local and does not call the GitHub API.
+  return;
 }
-
 function closeChangelog() {
   if (!state.changelogOpen) return;
   state.changelogOpen = false;
@@ -8317,6 +8314,16 @@ function renderItems() {
       selectableItems.forEach((item) => setItemSelection(item.item_id, true));
       refreshVisibility();
     });
+    const firstLayerItem = layerItems.find((entry) => entry?.icon);
+    if (firstLayerItem?.icon) {
+      const image = document.createElement("img");
+      image.className = "layer-tab-icon";
+      image.src = firstLayerItem.icon;
+      image.alt = "";
+      image.loading = "lazy";
+      image.setAttribute("aria-hidden", "true");
+      tab.append(image);
+    }
     const tabLabel = document.createElement("span");
     tabLabel.textContent = layer.label;
     tab.append(tabLabel);
@@ -9016,7 +9023,18 @@ function renderMapTabs() {
     tab.className = "map-tab";
     tab.setAttribute("role", "tab");
     tab.dataset.mapId = map.id;
-    tab.textContent = map.label;
+    if (map.image) {
+      const image = document.createElement("img");
+      image.className = "map-tab-image";
+      image.src = map.image;
+      image.alt = "";
+      image.loading = "lazy";
+      image.setAttribute("aria-hidden", "true");
+      tab.append(image);
+    }
+    const label = document.createElement("span");
+    label.textContent = map.label;
+    tab.append(label);
     tab.addEventListener("click", () => switchMap(map.id));
     fragment.append(tab);
   });
