@@ -47,6 +47,10 @@ Dữ liệu map, marker, tiles và assets được giữ nguyên từ source Min
 
 Xem `NOTICE.md` để biết thông tin nguồn và ghi công.
 
+## UI v3 — visual redesign
 
-### UI v3
-See `README-v3.md` for the visual redesign details and patch workflow.
+This build keeps the original MinMax-Aniipedia map/data engine and datasets intact while adding `ui-v3.css` as a visual layer. The redesign follows the supplied desktop reference: the map is the primary stage, controls are a floating command deck, layers are visual cards with thumbnails, and marker details open as a dedicated information drawer.
+
+The initial map view does not enable every layer. Players choose the layers they want to display.
+
+For an existing repository, copy `index.html` and `ui-v3.css` into the repository root. The existing `assets/` and `data/` directories remain untouched.
