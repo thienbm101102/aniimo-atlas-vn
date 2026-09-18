@@ -83,6 +83,14 @@
               <div class="map-overlay bottom-left">
                 <div class="map-legend" id="mapLegend"></div>
               </div>
+              <div class="map-explore-empty" id="mapExploreEmpty">
+                <div class="map-empty-art">✦</div>
+                <div>
+                  <strong>Bản đồ đang sạch</strong>
+                  <p>Hãy mở <b>Lớp</b> và chọn những gì bạn muốn xem.</p>
+                </div>
+                <button class="ghost-btn" id="openLayersCta">Mở bộ lọc</button>
+              </div>
               <div class="map-overlay bottom-right">
                 <button class="map-tool wide" id="layersBtn">☷ Lớp</button>
               </div>
@@ -104,11 +112,21 @@
               </div>
               <button class="icon-btn" id="closeDrawerBtn">×</button>
             </div>
-            <div class="drawer-actions">
-              <button class="small-btn" id="selectAllBtn">Chọn tất cả</button>
-              <button class="small-btn" id="clearAllBtn">Bỏ tất cả</button>
+            <div class="drawer-intro">
+              <div class="drawer-intro-main">
+                <span class="drawer-orb">✦</span>
+                <div>
+                  <strong>Tự chọn lớp hiển thị</strong>
+                  <p>Không có marker nào tự bật. Chạm vào thẻ để khám phá.</p>
+                </div>
+              </div>
+              <div id="layerSummary" class="layer-summary">0 / 0 lớp đang bật</div>
             </div>
-            <div class="filter-search"><input id="layerSearch" type="search" placeholder="Lọc lớp…"></div>
+            <div class="drawer-actions">
+              <button class="small-btn" id="selectAllBtn">Bật tất cả</button>
+              <button class="small-btn" id="clearAllBtn">Tắt tất cả</button>
+            </div>
+            <div class="filter-search"><input id="layerSearch" type="search" placeholder="Tìm lớp, tên Aniimo, vật phẩm…"></div>
             <div id="layerList" class="layer-list"></div>
           </aside>
 

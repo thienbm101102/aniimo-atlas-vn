@@ -34,3 +34,9 @@ Upload toàn bộ nội dung thư mục này vào repository và bật Settings 
 
 ## Nguồn
 Cấu trúc dữ liệu/assets được giữ từ MinMax-Aniipedia source được cung cấp trong yêu cầu. Aniimo Atlas VN là lớp giao diện cộng đồng mới, không phải website chính thức của Aniimo.
+
+## UX cập nhật
+- Bộ lọc lớp bản đồ mặc định **tắt toàn bộ** để bản đồ không bị phủ marker ngay khi mở.
+- Mỗi lớp hiển thị **ảnh đại diện, màu lớp, số lượng marker và trạng thái bật/tắt**.
+- Người chơi chủ động bật/tắt từng lớp hoặc dùng “Bật tất cả / Tắt tất cả”.
+- Khi chưa bật lớp nào, bản đồ hiển thị trạng thái khám phá sạch với nút mở bộ lọc.
