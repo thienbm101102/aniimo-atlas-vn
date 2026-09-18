@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0b0e13">
-    <meta name="description" content="Aniipedia — bản đồ, dữ liệu Aniimo, checklist và công cụ đội hình.">
+    <meta name="theme-color" content="#080d13">
+    <meta name="description" content="Aniipedia — bản đồ, dữ liệu Aniimo, checklist và cẩm nang vật phẩm.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,13 +12,14 @@
     <link rel="stylesheet" href="./styles.css?v=0.5.32">
     <link rel="stylesheet" href="./redesign.css?v=20260918-ui-v1">
     <link rel="stylesheet" href="./redesign-v2.css?v=20260918-ui-v2">
+    <link rel="stylesheet" href="./redesign-v3.css?v=20260918-ui-v3">
   </head>
   <body>
     <main id="appShell" class="app-shell">
       <aside id="sidebar" class="sidebar" aria-label="Điều hướng Aniipedia">
         <header class="brand">
           <div class="brand-copy">
-            <div class="brand-eyebrow">ANIIPEDIA</div><h1>Cẩm nang Aniimo</h1><p class="brand-subtitle">Bản đồ · Dữ liệu · Checklist · Đội hình</p>
+            <div class="brand-eyebrow">ANIIPEDIA</div><h1>Cẩm nang Aniimo</h1><p class="brand-subtitle">Bản đồ · Theo dõi · Checklist · Aniilog · Vật phẩm</p>
             <button id="appVersion" class="app-version app-version-button" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false">Đang tải phiên bản</button>
             <p id="mapMeta" class="database-meta">Đang tải cơ sở dữ liệu</p>
           </div>
@@ -31,12 +32,22 @@
         </header>
 
         <div id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Các khu vực chính">
-          <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true"><span class="workspace-icon" aria-hidden="true">⌖</span><span>Bản đồ</span></button>
-          <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false"><span class="workspace-icon" aria-hidden="true">◷</span><span>Theo dõi</span></button>
-          <button id="checklistWorkspaceTab" class="workspace-tab" data-workspace-view="checklist" type="button" role="tab" aria-controls="checklistWorkspace" aria-selected="false"><span class="workspace-icon" aria-hidden="true">✓</span><span>Checklist</span></button>
-          <button id="aniilogWorkspaceTab" class="workspace-tab" data-workspace-view="aniilog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false"><span class="workspace-icon" aria-hidden="true">◈</span><span>Aniilog</span></button>
-          <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false"><span class="workspace-icon" aria-hidden="true">▦</span><span>Vật phẩm</span></button>
-          <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false"><span class="workspace-icon" aria-hidden="true">◆</span><span>Đội hình</span></button>
+          <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true">
+            <span class="workspace-icon" aria-hidden="true"><img src="./assets/maps/idyll-mainland-preview.webp" alt=""></span><span>Bản đồ</span>
+          </button>
+          <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false">
+            <span class="workspace-icon" aria-hidden="true"><img src="./assets/aniilog/stats/regen.png" alt=""></span><span>Theo dõi</span>
+          </button>
+          <button id="checklistWorkspaceTab" class="workspace-tab" data-workspace-view="checklist" type="button" role="tab" aria-controls="checklistWorkspace" aria-selected="false">
+            <span class="workspace-icon" aria-hidden="true"><img src="./assets/aniilog/stats/defense.png" alt=""></span><span>Checklist</span>
+          </button>
+          <button id="aniilogWorkspaceTab" class="workspace-tab" data-workspace-view="aniilog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
+            <span class="workspace-icon" aria-hidden="true"><img src="./assets/icons/aniimo_10027__10027_Rookey_UI_PetHead_10027_Sprite_-3520156399681074536.png" alt=""></span><span>Aniilog</span>
+          </button>
+          <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
+            <span class="workspace-icon" aria-hidden="true"><img src="./assets/item-log/bb1a99693c110be05bf7.webp" alt=""></span><span>Vật phẩm</span>
+          </button>
+          <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false" tabindex="-1" aria-hidden="true"><span class="workspace-icon" aria-hidden="true">◆</span><span>Đội hình</span></button>
         </div>
 
         <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
@@ -121,6 +132,7 @@
           <span aria-hidden="true">&lsaquo;</span>
         </button>
         <div id="mapSurface" class="map-surface">
+          <div class="map-visual-ribbon" aria-hidden="true"><strong>Aniimo Explorer</strong><span>Khám phá · Ghim · Theo dõi</span></div>
           <div class="map-toolbar">
             <button id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
             <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
@@ -184,9 +196,9 @@
       </section>
     </div>
 
-  <script defer src="./app-config.js?v=0.5.38"></script>
-  <script defer src="./localization.js?v=0.5.38"></script>
-  <script defer src="./team-builder.js?v=0.5.38"></script>
-  <script defer src="./app.js?v=0.5.38"></script>
+  <script defer src="./app-config.js?v=0.5.40"></script>
+  <script defer src="./localization.js?v=0.5.40"></script>
+  <script defer src="./team-builder.js?v=0.5.40"></script>
+  <script defer src="./app.js?v=0.5.40"></script>
   </body>
 </html>
