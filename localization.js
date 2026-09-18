@@ -7,7 +7,6 @@
     "zh-CN": { label: "简体中文", htmlLang: "zh-CN" },
     ja: { label: "日本語", htmlLang: "ja" },
     ko: { label: "한국어", htmlLang: "ko" },
-    vi: { label: "Tiếng Việt", htmlLang: "vi" },
   });
 
   // Website-owned interface copy. Game-owned names and descriptions come from
@@ -262,8 +261,13 @@
     ["Shell Chest", "贝壳宝箱", "貝殻の宝箱", "조개껍데기 보물 상자"],
     ["Overworld Reward", "野外奖励", "フィールド報酬", "필드 보상"],
     ["Interval not yet verified", "刷新间隔尚未验证", "再出現間隔は未確認", "재생성 간격 미확인"],
+    ["Changelog", "更新日志", "変更履歴", "변경 내역"],
+    ["Loading GitHub changes...", "正在加载 GitHub 更新…", "GitHub の変更を読み込み中…", "GitHub 변경 내역을 불러오는 중…"],
+    ["View all changes on GitHub", "在 GitHub 查看所有更新", "GitHub ですべての変更を見る", "GitHub에서 모든 변경 내역 보기"],
+    ["No published changes are available.", "暂无已发布的更新。", "公開済みの変更はありません。", "게시된 변경 사항이 없습니다."],
     ["Open settings", "打开设置", "設定を開く", "설정 열기"],
     ["Close settings", "关闭设置", "設定を閉じる", "설정 닫기"],
+    ["Close changelog", "关闭更新日志", "変更履歴を閉じる", "변경 내역 닫기"],
     ["Zoom in", "放大", "拡大", "확대"],
     ["Zoom out", "缩小", "縮小", "축소"],
     ["Expand selection", "展开选择项", "選択を展開", "선택 펼치기"],
@@ -524,7 +528,6 @@
       if (activeLocale === "zh-CN") return `${locationMeta[1]} 个刷新点${locationMeta[2] ? ` · ${locationMeta[2]} 个栖息区域` : ""}`;
       if (activeLocale === "ja") return `${locationMeta[1]} 出現地点${locationMeta[2] ? ` · ${locationMeta[2]} 生息エリア` : ""}`;
       if (activeLocale === "ko") return `출현 지점 ${locationMeta[1]}개${locationMeta[2] ? ` · 서식 지역 ${locationMeta[2]}개` : ""}`;
-      if (activeLocale === "vi") return `${locationMeta[1]} điểm xuất hiện${locationMeta[2] ? ` · ${locationMeta[2]} khu vực sinh sống` : ""}`;
     }
     const habitatAreas = text.match(/^(.+) habitat areas$/);
     if (habitatAreas) {
@@ -605,7 +608,6 @@
       if (activeLocale === "zh-CN") return `${aniimoCount[1]} 个伊莫`;
       if (activeLocale === "ja") return `${aniimoCount[1]}体のアニモ`;
       if (activeLocale === "ko") return `${aniimoCount[1]}개 애니모`;
-      if (activeLocale === "vi") return `${aniimoCount[1]} Aniimo`;
     }
     const unlock = text.match(/^Unlock by obtaining (.+)$/);
     if (unlock) {
@@ -656,20 +658,6 @@
         [/^(\d+) research topics$/, "연구 주제 $1개"],
         [/^(\d+) total research points$/, "총 연구 포인트 $1"],
       ],
-      vi: [
-        [/^(\d+) tracked$/, "$1 đang theo dõi"],
-        [/^(\d+) markers$/, "$1 marker"],
-        [/^(\d+) locations$/, "$1 vị trí"],
-        [/^(\d+) documents?$/, "$1 tài liệu"],
-        [/^(\d+) items$/, "$1 vật phẩm"],
-        [/^(\d+) eggs$/, "$1 trứng"],
-        [/^(\d+) teleports$/, "$1 điểm dịch chuyển"],
-        [/^(\d+) misc$/, "$1 mục khác"],
-        [/^Tier (\d+)$/, "Bậc $1"],
-        [/^Level (\d+)$/, "Cấp $1"],
-        [/^(\d+) research topics$/, "$1 chủ đề nghiên cứu"],
-        [/^(\d+) total research points$/, "Tổng $1 điểm nghiên cứu"],
-      ],
     };
     for (const [pattern, replacement] of patterns[activeLocale] || []) {
       if (pattern.test(text)) return text.replace(pattern, replacement);
@@ -685,7 +673,6 @@
       if (activeLocale === "zh-CN") return `基础属性 · 总计 ${baseStats[1]}`;
       if (activeLocale === "ja") return `基礎ステータス · 合計 ${baseStats[1]}`;
       if (activeLocale === "ko") return `기본 능력치 · 합계 ${baseStats[1]}`;
-      if (activeLocale === "vi") return `Chỉ số cơ bản · Tổng ${baseStats[1]}`;
     }
     if (/\d+ markers.*\d+ items/.test(text)) {
       const countTerms = {

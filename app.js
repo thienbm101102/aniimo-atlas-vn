@@ -5,6 +5,9 @@ const ITEMLOG_DATA_URL =
   "./data/itemlog_data.json?v=20260725-catalog-v003";
 const ANIILOG_DATA_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
 const APP_VERSION = "v0.5.37";
+const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
+const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
+const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
 const ANIILOG_EXPANDED_GROUPS_STORAGE_KEY = "minmax-aniilog-expanded-groups-v1";
 const TRACKING_TICK_MS = 1000;
 const LOCAL_TRACKING_STORAGE_KEY = "minmax-map:tracking:v1";
@@ -237,25 +240,6 @@ const THEME_PRESETS = Object.freeze({
       highlight: "#e8bf63",
     }),
   }),
-  light: Object.freeze({
-    id: "light",
-    label: "Ánh sáng",
-    description: "Giao diện sáng Glassmorphism, tương phản cao và dịu mắt.",
-    motif: "glass",
-    icon: "",
-    colors: Object.freeze({
-      background: "#edf4f7",
-      backgroundAlt: "#dce9ef",
-      surface: "#f7fbfd",
-      surfaceRaised: "#ffffff",
-      border: "#c8d9e2",
-      text: "#13232c",
-      muted: "#60727c",
-      primary: "#0e8291",
-      secondary: "#096170",
-      highlight: "#b47b16",
-    }),
-  }),
   emberpup: Object.freeze({
     id: "emberpup",
     label: "Emberpup",
@@ -298,7 +282,7 @@ const THEME_PRESETS = Object.freeze({
 const DEFAULT_CUSTOM_THEME = Object.freeze({ ...THEME_PRESETS.emberpup.colors });
 const DEFAULT_PREFERENCES = Object.freeze({
   showMagicAttack: false,
-  language: "vi",
+  language: "en",
   theme: "default",
   mapSelectionPlacement: "top-right",
   mapSelectionDefaultState: "expanded",
@@ -383,6 +367,9 @@ const state = {
   settingsFocusReturn: null,
   settingsThemeDraft: null,
   settingsActiveTab: "general",
+  changelogOpen: false,
+  changelogFocusReturn: null,
+  changelogLoadToken: 0,
   tracking: new Map(),
   completed: new Set(),
   checklistData: null,
@@ -461,12 +448,13 @@ const els = {
   itemlogWorkspaceTab: document.querySelector("#itemlogWorkspaceTab"),
   teamWorkspaceTab: document.querySelector("#teamWorkspaceTab"),
   settingsButton: document.querySelector("#settingsButton"),
-  themeToggleButton: document.querySelector("#themeToggleButton"),
-  themeToggleGlyph: document.querySelector("#themeToggleGlyph"),
   sidebarCollapseButton: document.querySelector("#sidebarCollapseButton"),
   sidebarRestoreButton: document.querySelector("#sidebarRestoreButton"),
   settingsOverlay: document.querySelector("#settingsOverlay"),
   settingsCloseButton: document.querySelector("#settingsCloseButton"),
+  changelogOverlay: document.querySelector("#changelogOverlay"),
+  changelogCloseButton: document.querySelector("#changelogCloseButton"),
+  changelogContent: document.querySelector("#changelogContent"),
   mapWorkspace: document.querySelector("#mapWorkspace"),
   trackingWorkspace: document.querySelector("#trackingWorkspace"),
   checklistWorkspace: document.querySelector("#checklistWorkspace"),
@@ -1312,16 +1300,8 @@ function applyThemePreference() {
   document.documentElement.dataset.theme = id;
   document.documentElement.dataset.themeMotif = id === "custom" ? "custom" : THEME_PRESETS[id].motif;
   setThemeVariables(document.documentElement, colors);
-  document.documentElement.style.colorScheme = id === "light" ? "light" : "dark";
   const themeColor = document.querySelector('meta[name="theme-color"]');
   if (themeColor) themeColor.content = colors.surface;
-  if (els.themeToggleButton) {
-    const isLight = id === "light";
-    els.themeToggleButton.setAttribute("aria-pressed", String(isLight));
-    els.themeToggleButton.setAttribute("title", isLight ? "Chuyển sang giao diện tối" : "Chuyển sang giao diện sáng");
-    els.themeToggleButton.setAttribute("aria-label", isLight ? "Chuyển sang giao diện tối" : "Chuyển sang giao diện sáng");
-    if (els.themeToggleGlyph) els.themeToggleGlyph.textContent = isLight ? "☀" : "☾";
-  }
 }
 
 function loadLocalTracking() {
@@ -2104,9 +2084,6 @@ function openSettings() {
   state.settingsThemeDraft = themeDraftFromPreferences();
   renderSettings();
   els.settingsOverlay.hidden = false;
-  els.settingsOverlay.style.display = "";
-  els.settingsOverlay.style.visibility = "";
-  els.settingsOverlay.style.pointerEvents = "";
   els.settingsButton.setAttribute("aria-expanded", "true");
   window.requestAnimationFrame(() => els.settingsCloseButton.focus());
 }
@@ -2122,14 +2099,92 @@ function closeSettings() {
   state.settingsOpen = false;
   state.settingsThemeDraft = null;
   els.settingsOverlay.hidden = true;
-  // Defensive reset: CSS also enforces [hidden], but this guarantees no stale
-  // inline presentation can keep the overlay interactive after closing.
-  els.settingsOverlay.style.display = "none";
-  els.settingsOverlay.style.visibility = "hidden";
-  els.settingsOverlay.style.pointerEvents = "none";
   els.settingsButton.setAttribute("aria-expanded", "false");
   const focusTarget = state.settingsFocusReturn || els.settingsButton;
   state.settingsFocusReturn = null;
+  focusTarget.focus();
+}
+
+function renderGitHubChangelog(commits) {
+  const fragment = document.createDocumentFragment();
+  const publicCommits = commits
+    .filter((entry) => !CHANGELOG_INTERNAL_MARKER_RE.test(String(entry?.commit?.message || "")))
+    .slice(0, CHANGELOG_PUBLIC_ENTRY_LIMIT);
+  publicCommits.forEach((entry) => {
+    const commit = entry?.commit || {};
+    const subject = String(commit.message || "GitHub update").split(/\r?\n/, 1)[0];
+    const sha = String(entry?.sha || "").slice(0, 7);
+    const url = String(entry?.html_url || "");
+    const dateValue = commit?.committer?.date || commit?.author?.date || "";
+    const date = dateValue ? new Date(dateValue) : null;
+    const article = document.createElement("article");
+    article.className = "changelog-release";
+    const header = document.createElement("header");
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = subject;
+    link.title = "View this commit diff on GitHub";
+    const time = document.createElement("time");
+    if (date && !Number.isNaN(date.getTime())) {
+      time.dateTime = date.toISOString();
+      time.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+    }
+    header.append(link, time);
+    const metadata = document.createElement("p");
+    metadata.className = "changelog-commit-sha";
+    metadata.textContent = sha ? `Commit ${sha}` : "GitHub commit";
+    article.append(header, metadata);
+    fragment.append(article);
+  });
+  if (!publicCommits.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "No published changes are available.";
+    fragment.append(empty);
+  }
+  els.changelogContent.replaceChildren(fragment);
+}
+
+async function loadGitHubChangelog() {
+  const token = ++state.changelogLoadToken;
+  els.changelogContent.textContent = "Loading GitHub changes...";
+  try {
+    const response = await fetch(GITHUB_COMMITS_URL, {
+      cache: "no-store",
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+    const commits = await response.json();
+    if (token !== state.changelogLoadToken) return;
+    if (!Array.isArray(commits) || !commits.length) throw new Error("No commits were returned");
+    renderGitHubChangelog(commits);
+  } catch (error) {
+    if (token !== state.changelogLoadToken) return;
+    els.changelogContent.textContent = "The changelog is unavailable right now. You can still view all changes on GitHub.";
+    els.changelogContent.classList.add("changelog-error");
+  }
+}
+
+function openChangelog() {
+  if (state.changelogOpen) return;
+  state.changelogOpen = true;
+  state.changelogFocusReturn = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  els.changelogOverlay.hidden = false;
+  els.appVersion.setAttribute("aria-expanded", "true");
+  els.changelogContent.classList.remove("changelog-error");
+  void loadGitHubChangelog();
+  window.requestAnimationFrame(() => els.changelogCloseButton.focus());
+}
+
+function closeChangelog() {
+  if (!state.changelogOpen) return;
+  state.changelogOpen = false;
+  state.changelogLoadToken += 1;
+  els.changelogOverlay.hidden = true;
+  els.appVersion.setAttribute("aria-expanded", "false");
+  const focusTarget = state.changelogFocusReturn || els.appVersion;
+  state.changelogFocusReturn = null;
   focusTarget.focus();
 }
 
@@ -3054,9 +3109,34 @@ function renderCatalogIndex(entries, selectedId, view, title) {
   const index = document.createElement("nav");
   index.className = "catalog-index";
   index.setAttribute("aria-label", `${title} entries`);
-  const fragment = document.createDocumentFragment();
-  entries.forEach((entry) => fragment.append(createCatalogIndexRow(entry, selectedId, view, null)));
-  index.append(fragment);
+
+  const virtualList = document.createElement("div");
+  virtualList.className = "catalog-index-virtual";
+  virtualList.style.height = `${Math.max(entries.length * CATALOG_INDEX_ROW_HEIGHT, CATALOG_INDEX_ROW_HEIGHT)}px`;
+  index.append(virtualList);
+
+  let animationFrame = 0;
+  const refreshVisibleRows = () => {
+    animationFrame = 0;
+    const viewportHeight = index.clientHeight || 400;
+    const start = Math.max(0, Math.floor(index.scrollTop / CATALOG_INDEX_ROW_HEIGHT) - CATALOG_INDEX_OVERSCAN);
+    const end = Math.min(
+      entries.length,
+      Math.ceil((index.scrollTop + viewportHeight) / CATALOG_INDEX_ROW_HEIGHT) + CATALOG_INDEX_OVERSCAN,
+    );
+    const fragment = document.createDocumentFragment();
+    for (let rowIndex = start; rowIndex < end; rowIndex += 1) {
+      fragment.append(createCatalogIndexRow(entries[rowIndex], selectedId, view, rowIndex));
+    }
+    virtualList.replaceChildren(fragment);
+  };
+
+  index.refreshVirtualRows = refreshVisibleRows;
+  index.addEventListener("scroll", () => {
+    if (!animationFrame) animationFrame = window.requestAnimationFrame(refreshVisibleRows);
+  }, { passive: true });
+  window.requestAnimationFrame(refreshVisibleRows);
+
   return index;
 }
 
@@ -4482,7 +4562,7 @@ function renderAniilogBossVariants(bossVariants) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "catalog-locate-button catalog-boss-locate-button";
-    locate.textContent = "Xem trên bản đồ";
+    locate.textContent = "Locate on Map";
     locate.disabled = !boss.map_id || !boss.item_id;
     locate.addEventListener("click", () => locateBossVariant(boss));
     header.append(icon, copy, locate);
@@ -4535,7 +4615,7 @@ function renderAniilogCatalogRecord(entry) {
   const copy = document.createElement("div");
   const stickyIndicator = document.createElement("span");
   stickyIndicator.className = "catalog-sticky-indicator";
-  stickyIndicator.textContent = "Aniimo đang chọn";
+  stickyIndicator.textContent = "Selected Aniimo";
   stickyIndicator.setAttribute("aria-hidden", "true");
   const number = document.createElement("p");
   number.className = "catalog-eyebrow";
@@ -4559,7 +4639,7 @@ function renderAniilogCatalogRecord(entry) {
   const locate = document.createElement("button");
   locate.type = "button";
   locate.className = "catalog-locate-button";
-  locate.textContent = "Xem trên bản đồ";
+  locate.textContent = "Locate on Map";
   locate.disabled = !Array.isArray(entry.map_ids) || !entry.map_ids.length;
   locate.addEventListener("click", () => locateAniilogEntry(entry));
   actions.append(locate);
@@ -4733,7 +4813,7 @@ function renderItemlogReference(item, className = "catalog-item-reference") {
   button.type = "button";
   button.className = `${className} is-linked`;
   button.append(amountLabel, nameLabel);
-  button.title = `Mở ${linkedEntry.name} trong Kho đồ`;
+  button.title = `Open ${linkedEntry.name} in the Item-log`;
   button.addEventListener("click", () => openItemlogReference(item.item_id));
   return button;
 }
@@ -5322,7 +5402,7 @@ function renderItemLogCatalogRecord(entry) {
   const copy = document.createElement("div");
   const stickyIndicator = document.createElement("span");
   stickyIndicator.className = "catalog-sticky-indicator";
-  stickyIndicator.textContent = "Vật phẩm đang chọn";
+  stickyIndicator.textContent = "Selected item";
   stickyIndicator.setAttribute("aria-hidden", "true");
   const eyebrow = document.createElement("p");
   eyebrow.className = "catalog-eyebrow";
@@ -5346,7 +5426,7 @@ function renderItemLogCatalogRecord(entry) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "catalog-locate-button";
-    locate.textContent = "Xem trên bản đồ";
+    locate.textContent = "Locate on Map";
     locate.addEventListener("click", () => locateItemlogEntry(entry));
     actions.append(locate);
   }
@@ -5628,8 +5708,8 @@ function renderCatalogSidebar(view, title, allEntries, entries, selectedId, stat
 function renderCatalogPreview(options = {}) {
   if (!isCatalogView()) return;
   const view = state.sidebarView;
-  const title = view === "aniilog" ? "Aniilog" : "Kho đồ";
-  const sidebarTitle = view === "aniilog" ? "Aniimo" : "Vật phẩm";
+  const title = view === "aniilog" ? "Aniilog" : "Item-log";
+  const sidebarTitle = view === "aniilog" ? "Filters" : "Items";
   const currentIndex = els.catalogSidebarContent.querySelector(".catalog-index");
   if (currentIndex?.dataset.catalogView === view) state.catalogIndexScroll[view] = currentIndex.scrollTop;
   els.catalogPanel.textContent = "";
@@ -5641,11 +5721,11 @@ function renderCatalogPreview(options = {}) {
   const name = document.createElement("h1");
   name.textContent = title;
   const subtitle = document.createElement("p");
-  subtitle.textContent = view === "aniilog" ? "Bộ sưu tập Aniimo, hình thái, kỹ năng và vị trí" : "Kho vật phẩm, trứng, tài nguyên và các liên kết liên quan";
+  subtitle.textContent = view === "aniilog" ? "Loading form data" : "Loading item data";
   headingCopy.append(name, subtitle);
   const badge = document.createElement("span");
   badge.className = "catalog-preview-badge";
-  badge.textContent = view === "aniilog" ? "227 hồ sơ" : "2.543 vật phẩm";
+  badge.textContent = "Source data";
   heading.append(headingCopy, badge);
   els.catalogPanel.append(heading);
 
@@ -6112,7 +6192,7 @@ function renderChecklistRow(entry) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "checklist-locate";
-    locate.textContent = "Định vị trên bản đồ";
+    locate.textContent = "Locate";
     locate.addEventListener("click", () => {
       void locateChecklistLuminEntry(entry);
     });
@@ -6299,7 +6379,6 @@ function setSidebarView(view) {
   const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog", "team"].includes(view) ? view : "map";
   state.sidebarView = nextView;
   if (nextView === "aniilog") void ensureAniilogData();
-  if (nextView === "itemlog") void ensureItemlogData();
   updateWorkspaceTabs();
   refreshSelectionDetails();
   updateMobileSelectionPanel();
@@ -7196,20 +7275,13 @@ function searchText(parts) {
   return values.join(" ").toLowerCase();
 }
 
-function resolveAssetSource(source) {
-  const raw = String(source || "").trim();
-  if (!raw) return "";
-  if (/^(?:https?:|data:|blob:|\/)/i.test(raw)) return raw;
-  return raw.startsWith("./") ? raw : `./${raw}`;
-}
-
 function makeIcon(className, source) {
   const icon = document.createElement("img");
   icon.className = className;
   icon.alt = "";
   icon.draggable = false;
   if (source) {
-    icon.src = resolveAssetSource(source);
+    icon.src = source;
     icon.addEventListener("error", () => {
       icon.removeAttribute("src");
       icon.classList.add("icon-missing");
@@ -8187,15 +8259,6 @@ function refreshVisibility() {
       tab.hidden = Boolean(state.search) && visibleRows === 0;
       tab.setAttribute("aria-selected", String(section.dataset.layerId === state.activeLayer));
       tab.tabIndex = section.dataset.layerId === state.activeLayer ? 0 : -1;
-      const layerItems = [...section.querySelectorAll(".item-row, .map-group-row")];
-      const selectedRows = layerItems.filter((row) => row.classList.contains("enabled"));
-      const stateBadge = tab.querySelector(".layer-tab-state");
-      const full = layerItems.length > 0 && selectedRows.length === layerItems.length;
-      const partial = selectedRows.length > 0 && !full;
-      tab.classList.toggle("is-active-layer", section.dataset.layerId === state.activeLayer);
-      tab.classList.toggle("is-enabled", full);
-      tab.classList.toggle("is-partial", partial);
-      if (stateBadge) stateBadge.textContent = full ? "✓" : partial ? "◐" : "○";
     }
   }
 
@@ -8212,18 +8275,6 @@ function refreshVisibility() {
   updateFilterCount();
   updateSharePinsButton();
   stabilizeViewport();
-}
-
-function vietnameseLayerLabel(layer) {
-  const labels = {
-    items: "Vật phẩm",
-    aniimo: "Aniimo",
-    eggs: "Trứng",
-    teleports: "Dịch chuyển",
-    ambers: "Lumen",
-    misc: "Khác",
-  };
-  return labels[layer?.id] || window.AniipediaI18n?.translate?.(layer?.label || "") || layer?.label || "Lớp";
 }
 
 function renderItems() {
@@ -8244,7 +8295,8 @@ function renderItems() {
       .filter((item) => item.layer_id === layer.id)
       .sort((a, b) => compareLayerItems(a, b, layer.id));
 
-    const tab = document.createElement("div");
+    const tab = document.createElement("button");
+    tab.type = "button";
     tab.className = "layer-tab";
     tab.dataset.layerId = layer.id;
     tab.id = `layer-tab-${layer.id}`;
@@ -8257,13 +8309,6 @@ function renderItems() {
       state.activeLayer = layer.id;
       refreshVisibility();
     });
-    tab.addEventListener("keydown", (event) => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      event.preventDefault();
-      clearLocatedSpawn();
-      state.activeLayer = layer.id;
-      refreshVisibility();
-    });
     tab.addEventListener("dblclick", (event) => {
       event.preventDefault();
       clearLocatedSpawn();
@@ -8272,47 +8317,9 @@ function renderItems() {
       selectableItems.forEach((item) => setItemSelection(item.item_id, true));
       refreshVisibility();
     });
-    const previewItem = layerItems.find((entry) => entry?.icon) || layerItems[0] || null;
-    const tabVisual = document.createElement("span");
-    tabVisual.className = "layer-tab-visual";
-    if (previewItem?.icon) {
-      const preview = makeIcon("layer-tab-image", previewItem.icon);
-      preview.alt = "";
-      tabVisual.append(preview);
-    } else {
-      tabVisual.textContent = "✦";
-    }
-    const tabCopy = document.createElement("span");
-    tabCopy.className = "layer-tab-copy";
-    const tabLabel = document.createElement("strong");
-    tabLabel.textContent = vietnameseLayerLabel(layer);
-    const tabMeta = document.createElement("small");
-    tabMeta.textContent = `${layer.entry_count || layerItems.length || 0} loại · ${layer.spawn_count || 0} vị trí`;
-    tabCopy.append(tabLabel, tabMeta);
-    const tabState = document.createElement("span");
-    tabState.className = "layer-tab-state";
-    tabState.textContent = "○";
-    const toggle = document.createElement("span");
-    toggle.className = "layer-tab-toggle";
-    toggle.textContent = "Hiện";
-    toggle.setAttribute("role", "button");
-    toggle.setAttribute("tabindex", "0");
-    const toggleLayer = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      clearLocatedSpawn();
-      const selectable = layerItems.filter((item) => itemMatches(item));
-      const allSelected = selectable.length > 0 && selectable.every((item) => itemSelectionState(item.item_id).selected === itemSelectionState(item.item_id).total);
-      selectable.forEach((item) => setItemSelection(item.item_id, !allSelected));
-      state.activeLayer = layer.id;
-      refreshVisibility();
-    };
-    toggle.addEventListener("click", toggleLayer);
-    toggle.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") toggleLayer(event);
-    });
-    tab.append(tabVisual, tabCopy, tabState, toggle);
-    tab.dataset.emptySelectionLabel = "Chưa bật";
+    const tabLabel = document.createElement("span");
+    tabLabel.textContent = layer.label;
+    tab.append(tabLabel);
     els.layerTabs.append(tab);
 
     const section = document.createElement("section");
@@ -8807,15 +8814,15 @@ function renderSelectionDetail(detail, spawn, item) {
   const formValue = spawn.form_label || item.form_label;
   const regionValue = regionDetailValue(spawn);
   const rows = [
-    ["Loại", typeLabel],
-    spawn.document_group ? ["Bộ", spawn.document_group] : null,
-    spawn.collectible_group ? ["Bộ", spawn.collectible_group] : null,
-    formValue ? ["Hình thái", formValue] : null,
+    ["Type", typeLabel],
+    spawn.document_group ? ["Series", spawn.document_group] : null,
+    spawn.collectible_group ? ["Series", spawn.collectible_group] : null,
+    formValue ? ["Form", formValue] : null,
     ["X", formatCoordinate(spawn.x), formatCoordinate(spawn.x)],
     ["Y", formatCoordinate(spawn.y), formatCoordinate(spawn.y)],
-    ["Độ cao", formatNumber(spawn.height_y, 2)],
-    areaValue ? ["Khu vực", areaValue] : null,
-    regionValue ? ["Vùng", regionValue] : null,
+    ["Height", formatNumber(spawn.height_y, 2)],
+    areaValue ? ["Area", areaValue] : null,
+    regionValue ? ["Region", regionValue] : null,
   ].filter((row) => row && row[1]);
   rows.forEach(([label, value, copyValue]) => {
     const left = document.createElement("span");
@@ -8839,43 +8846,7 @@ function renderSelectionDetail(detail, spawn, item) {
     grid.append(left, right);
   });
 
-  const art = document.createElement("div");
-  art.className = "selection-artwork";
-  const artGlow = document.createElement("div");
-  artGlow.className = "selection-artwork-glow";
-  const artImage = makeIcon("selection-artwork-image", spawn.icon || item.icon);
-  artImage.alt = spawn.display_name;
-  artGlow.append(artImage);
-  art.append(artGlow);
-
-  const quick = document.createElement("div");
-  quick.className = "selection-quick-facts";
-  const facts = [
-    ["Loại", typeLabel],
-    formValue ? ["Hình thái", formValue] : null,
-    areaValue ? ["Khu vực", areaValue] : null,
-    regionValue ? ["Vùng", regionValue] : null,
-  ].filter(Boolean);
-  facts.forEach(([label, value]) => {
-    const fact = document.createElement("div");
-    fact.className = "selection-quick-fact";
-    const factLabel = document.createElement("span");
-    factLabel.textContent = label;
-    const factValue = document.createElement("strong");
-    factValue.textContent = value;
-    fact.append(factLabel, factValue);
-    quick.append(fact);
-  });
-
-  const description = String(item.description || spawn.description || "").trim();
-  if (description) {
-    const desc = document.createElement("p");
-    desc.className = "selection-description";
-    desc.textContent = description;
-    quick.append(desc);
-  }
-  art.append(quick);
-  detail.append(title, art, grid);
+  detail.append(title, grid);
   if (state.sidebarView !== "map") {
     const locate = document.createElement("button");
     locate.type = "button";
@@ -8890,10 +8861,10 @@ function renderSelectionDetail(detail, spawn, item) {
     track.type = "button";
     track.className = "track-selection-button";
     if (state.tracking.has(trackingId)) {
-      track.textContent = "Mở theo dõi";
+      track.textContent = "Open Tracking";
       track.addEventListener("click", () => setSidebarView("tracking"));
     } else {
-      track.textContent = "Theo dõi hồi sinh";
+      track.textContent = "Track Respawn";
       track.addEventListener("click", () => {
         addTrackingForSpawn(spawn, item);
       });
@@ -9045,17 +9016,7 @@ function renderMapTabs() {
     tab.className = "map-tab";
     tab.setAttribute("role", "tab");
     tab.dataset.mapId = map.id;
-    const preview = makeIcon("map-tab-preview", map.image || map.fallback_image || "");
-    preview.alt = "";
-    const copy = document.createElement("span");
-    copy.className = "map-tab-copy";
-    const name = document.createElement("strong");
-    name.textContent = map.label;
-    const meta = document.createElement("small");
-    const mapCounts = map.counts || {};
-    meta.textContent = `${Number(mapCounts.spawns || 0).toLocaleString()} vị trí`;
-    copy.append(name, meta);
-    tab.append(preview, copy);
+    tab.textContent = map.label;
     tab.addEventListener("click", () => switchMap(map.id));
     fragment.append(tab);
   });
@@ -9124,10 +9085,6 @@ function switchMap(mapId, preserveSharedPins = false) {
   const loadToken = ++state.mapLoadToken;
   state.activeMapId = mapId;
   state.mapLoadError = null;
-  if (!preserveSharedPins && !state.pendingSharedPinSelection) {
-    state.enabled.clear();
-    state.disabledSpawnIds.clear();
-  }
   const dataset = datasetForMap(mapId);
   state.loadingMapId = dataset ? null : mapId;
   state.data = prepareData({
@@ -9211,17 +9168,15 @@ function bindEvents() {
   els.aniilogWorkspaceTab.addEventListener("click", () => setSidebarView("aniilog"));
   els.itemlogWorkspaceTab.addEventListener("click", () => setSidebarView("itemlog"));
   els.teamWorkspaceTab.addEventListener("click", () => setSidebarView("team"));
-  els.themeToggleButton?.addEventListener("click", () => {
-    const nextTheme = state.preferences.theme === "light" ? "default" : "light";
-    state.preferences.theme = nextTheme;
-    persistLocalTracking();
-    applyThemePreference();
-    renderSettings();
-  });
+  els.appVersion.addEventListener("click", openChangelog);
   els.settingsButton.addEventListener("click", openSettings);
   els.settingsCloseButton.addEventListener("click", closeSettings);
   els.settingsOverlay.addEventListener("click", (event) => {
     if (event.target === els.settingsOverlay) closeSettings();
+  });
+  els.changelogCloseButton.addEventListener("click", closeChangelog);
+  els.changelogOverlay.addEventListener("click", (event) => {
+    if (event.target === els.changelogOverlay) closeChangelog();
   });
   els.workspaceTabs.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
@@ -9238,9 +9193,11 @@ function bindEvents() {
   });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.settingsOpen) closeSettings();
+    if (event.key === "Escape" && state.changelogOpen) closeChangelog();
     if (
       event.key === "Escape"
       && !state.settingsOpen
+      && !state.changelogOpen
       && state.selectedSpawnIndex !== null
     ) {
       dismissSelection();
