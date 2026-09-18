@@ -237,6 +237,25 @@ const THEME_PRESETS = Object.freeze({
       highlight: "#e8bf63",
     }),
   }),
+  light: Object.freeze({
+    id: "light",
+    label: "Ánh sáng",
+    description: "Giao diện sáng Glassmorphism, tương phản cao và dịu mắt.",
+    motif: "glass",
+    icon: "",
+    colors: Object.freeze({
+      background: "#edf4f7",
+      backgroundAlt: "#dce9ef",
+      surface: "#f7fbfd",
+      surfaceRaised: "#ffffff",
+      border: "#c8d9e2",
+      text: "#13232c",
+      muted: "#60727c",
+      primary: "#0e8291",
+      secondary: "#096170",
+      highlight: "#b47b16",
+    }),
+  }),
   emberpup: Object.freeze({
     id: "emberpup",
     label: "Emberpup",
@@ -442,6 +461,8 @@ const els = {
   itemlogWorkspaceTab: document.querySelector("#itemlogWorkspaceTab"),
   teamWorkspaceTab: document.querySelector("#teamWorkspaceTab"),
   settingsButton: document.querySelector("#settingsButton"),
+  themeToggleButton: document.querySelector("#themeToggleButton"),
+  themeToggleGlyph: document.querySelector("#themeToggleGlyph"),
   sidebarCollapseButton: document.querySelector("#sidebarCollapseButton"),
   sidebarRestoreButton: document.querySelector("#sidebarRestoreButton"),
   settingsOverlay: document.querySelector("#settingsOverlay"),
@@ -1291,8 +1312,16 @@ function applyThemePreference() {
   document.documentElement.dataset.theme = id;
   document.documentElement.dataset.themeMotif = id === "custom" ? "custom" : THEME_PRESETS[id].motif;
   setThemeVariables(document.documentElement, colors);
+  document.documentElement.style.colorScheme = id === "light" ? "light" : "dark";
   const themeColor = document.querySelector('meta[name="theme-color"]');
   if (themeColor) themeColor.content = colors.surface;
+  if (els.themeToggleButton) {
+    const isLight = id === "light";
+    els.themeToggleButton.setAttribute("aria-pressed", String(isLight));
+    els.themeToggleButton.setAttribute("title", isLight ? "Chuyển sang giao diện tối" : "Chuyển sang giao diện sáng");
+    els.themeToggleButton.setAttribute("aria-label", isLight ? "Chuyển sang giao diện tối" : "Chuyển sang giao diện sáng");
+    if (els.themeToggleGlyph) els.themeToggleGlyph.textContent = isLight ? "☀" : "☾";
+  }
 }
 
 function loadLocalTracking() {
@@ -3025,34 +3054,9 @@ function renderCatalogIndex(entries, selectedId, view, title) {
   const index = document.createElement("nav");
   index.className = "catalog-index";
   index.setAttribute("aria-label", `${title} entries`);
-
-  const virtualList = document.createElement("div");
-  virtualList.className = "catalog-index-virtual";
-  virtualList.style.height = `${Math.max(entries.length * CATALOG_INDEX_ROW_HEIGHT, CATALOG_INDEX_ROW_HEIGHT)}px`;
-  index.append(virtualList);
-
-  let animationFrame = 0;
-  const refreshVisibleRows = () => {
-    animationFrame = 0;
-    const viewportHeight = index.clientHeight || 400;
-    const start = Math.max(0, Math.floor(index.scrollTop / CATALOG_INDEX_ROW_HEIGHT) - CATALOG_INDEX_OVERSCAN);
-    const end = Math.min(
-      entries.length,
-      Math.ceil((index.scrollTop + viewportHeight) / CATALOG_INDEX_ROW_HEIGHT) + CATALOG_INDEX_OVERSCAN,
-    );
-    const fragment = document.createDocumentFragment();
-    for (let rowIndex = start; rowIndex < end; rowIndex += 1) {
-      fragment.append(createCatalogIndexRow(entries[rowIndex], selectedId, view, rowIndex));
-    }
-    virtualList.replaceChildren(fragment);
-  };
-
-  index.refreshVirtualRows = refreshVisibleRows;
-  index.addEventListener("scroll", () => {
-    if (!animationFrame) animationFrame = window.requestAnimationFrame(refreshVisibleRows);
-  }, { passive: true });
-  window.requestAnimationFrame(refreshVisibleRows);
-
+  const fragment = document.createDocumentFragment();
+  entries.forEach((entry) => fragment.append(createCatalogIndexRow(entry, selectedId, view, null)));
+  index.append(fragment);
   return index;
 }
 
@@ -4478,7 +4482,7 @@ function renderAniilogBossVariants(bossVariants) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "catalog-locate-button catalog-boss-locate-button";
-    locate.textContent = "Locate on Map";
+    locate.textContent = "Xem trên bản đồ";
     locate.disabled = !boss.map_id || !boss.item_id;
     locate.addEventListener("click", () => locateBossVariant(boss));
     header.append(icon, copy, locate);
@@ -4531,7 +4535,7 @@ function renderAniilogCatalogRecord(entry) {
   const copy = document.createElement("div");
   const stickyIndicator = document.createElement("span");
   stickyIndicator.className = "catalog-sticky-indicator";
-  stickyIndicator.textContent = "Selected Aniimo";
+  stickyIndicator.textContent = "Aniimo đang chọn";
   stickyIndicator.setAttribute("aria-hidden", "true");
   const number = document.createElement("p");
   number.className = "catalog-eyebrow";
@@ -4555,7 +4559,7 @@ function renderAniilogCatalogRecord(entry) {
   const locate = document.createElement("button");
   locate.type = "button";
   locate.className = "catalog-locate-button";
-  locate.textContent = "Locate on Map";
+  locate.textContent = "Xem trên bản đồ";
   locate.disabled = !Array.isArray(entry.map_ids) || !entry.map_ids.length;
   locate.addEventListener("click", () => locateAniilogEntry(entry));
   actions.append(locate);
@@ -4729,7 +4733,7 @@ function renderItemlogReference(item, className = "catalog-item-reference") {
   button.type = "button";
   button.className = `${className} is-linked`;
   button.append(amountLabel, nameLabel);
-  button.title = `Open ${linkedEntry.name} in the Item-log`;
+  button.title = `Mở ${linkedEntry.name} trong Kho đồ`;
   button.addEventListener("click", () => openItemlogReference(item.item_id));
   return button;
 }
@@ -5318,7 +5322,7 @@ function renderItemLogCatalogRecord(entry) {
   const copy = document.createElement("div");
   const stickyIndicator = document.createElement("span");
   stickyIndicator.className = "catalog-sticky-indicator";
-  stickyIndicator.textContent = "Selected item";
+  stickyIndicator.textContent = "Vật phẩm đang chọn";
   stickyIndicator.setAttribute("aria-hidden", "true");
   const eyebrow = document.createElement("p");
   eyebrow.className = "catalog-eyebrow";
@@ -5342,7 +5346,7 @@ function renderItemLogCatalogRecord(entry) {
     const locate = document.createElement("button");
     locate.type = "button";
     locate.className = "catalog-locate-button";
-    locate.textContent = "Locate on Map";
+    locate.textContent = "Xem trên bản đồ";
     locate.addEventListener("click", () => locateItemlogEntry(entry));
     actions.append(locate);
   }
@@ -5624,8 +5628,8 @@ function renderCatalogSidebar(view, title, allEntries, entries, selectedId, stat
 function renderCatalogPreview(options = {}) {
   if (!isCatalogView()) return;
   const view = state.sidebarView;
-  const title = view === "aniilog" ? "Aniilog" : "Item-log";
-  const sidebarTitle = view === "aniilog" ? "Filters" : "Items";
+  const title = view === "aniilog" ? "Aniilog" : "Kho đồ";
+  const sidebarTitle = view === "aniilog" ? "Aniimo" : "Vật phẩm";
   const currentIndex = els.catalogSidebarContent.querySelector(".catalog-index");
   if (currentIndex?.dataset.catalogView === view) state.catalogIndexScroll[view] = currentIndex.scrollTop;
   els.catalogPanel.textContent = "";
@@ -5637,11 +5641,11 @@ function renderCatalogPreview(options = {}) {
   const name = document.createElement("h1");
   name.textContent = title;
   const subtitle = document.createElement("p");
-  subtitle.textContent = view === "aniilog" ? "Loading form data" : "Loading item data";
+  subtitle.textContent = view === "aniilog" ? "Bộ sưu tập Aniimo, hình thái, kỹ năng và vị trí" : "Kho vật phẩm, trứng, tài nguyên và các liên kết liên quan";
   headingCopy.append(name, subtitle);
   const badge = document.createElement("span");
   badge.className = "catalog-preview-badge";
-  badge.textContent = "Source data";
+  badge.textContent = view === "aniilog" ? "227 hồ sơ" : "2.543 vật phẩm";
   heading.append(headingCopy, badge);
   els.catalogPanel.append(heading);
 
@@ -6295,6 +6299,7 @@ function setSidebarView(view) {
   const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog", "team"].includes(view) ? view : "map";
   state.sidebarView = nextView;
   if (nextView === "aniilog") void ensureAniilogData();
+  if (nextView === "itemlog") void ensureItemlogData();
   updateWorkspaceTabs();
   refreshSelectionDetails();
   updateMobileSelectionPanel();
@@ -7191,13 +7196,20 @@ function searchText(parts) {
   return values.join(" ").toLowerCase();
 }
 
+function resolveAssetSource(source) {
+  const raw = String(source || "").trim();
+  if (!raw) return "";
+  if (/^(?:https?:|data:|blob:|\/)/i.test(raw)) return raw;
+  return raw.startsWith("./") ? raw : `./${raw}`;
+}
+
 function makeIcon(className, source) {
   const icon = document.createElement("img");
   icon.className = className;
   icon.alt = "";
   icon.draggable = false;
   if (source) {
-    icon.src = source;
+    icon.src = resolveAssetSource(source);
     icon.addEventListener("error", () => {
       icon.removeAttribute("src");
       icon.classList.add("icon-missing");
@@ -9199,6 +9211,13 @@ function bindEvents() {
   els.aniilogWorkspaceTab.addEventListener("click", () => setSidebarView("aniilog"));
   els.itemlogWorkspaceTab.addEventListener("click", () => setSidebarView("itemlog"));
   els.teamWorkspaceTab.addEventListener("click", () => setSidebarView("team"));
+  els.themeToggleButton?.addEventListener("click", () => {
+    const nextTheme = state.preferences.theme === "light" ? "default" : "light";
+    state.preferences.theme = nextTheme;
+    persistLocalTracking();
+    applyThemePreference();
+    renderSettings();
+  });
   els.settingsButton.addEventListener("click", openSettings);
   els.settingsCloseButton.addEventListener("click", closeSettings);
   els.settingsOverlay.addEventListener("click", (event) => {

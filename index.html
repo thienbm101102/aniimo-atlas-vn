@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#1a1f22">
+    <meta name="theme-color" content="#101922">
     <title>Aniimo Atlas VN</title>
-    <link rel="stylesheet" href="./styles.css?v=1.0.0-v5">
+    <link rel="stylesheet" href="./styles.css?v=1.0.0-v6">
   </head>
   <body>
     <main id="appShell" class="app-shell">
@@ -16,12 +16,17 @@
             <span id="appVersion" class="app-version" aria-label="Phiên bản ứng dụng">Version loading</span>
             <p id="mapMeta" class="database-meta">Đang tải cơ sở dữ liệu…</p>
           </div>
-          <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Open settings" title="Settings">
+          <div class="brand-actions" aria-label="Giao diện">
+            <button id="themeToggleButton" class="theme-toggle-button" type="button" aria-label="Chuyển giao diện" title="Chuyển giao diện">
+              <span id="themeToggleGlyph" aria-hidden="true">☾</span>
+            </button>
+            <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">
             <svg class="settings-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
           </button>
+          </div>
         </header>
 
         <div id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Các khu vực điều hướng">
@@ -168,9 +173,9 @@
     </div>
 
 
-  <script defer src="./app-config.js?v=1.0.0-v4"></script>
-  <script defer src="./localization.js?v=1.0.0-v4"></script>
-  <script defer src="./team-builder.js?v=1.0.0-v4"></script>
-  <script defer src="./app.js?v=1.0.0-v4"></script>
+  <script defer src="./app-config.js?v=1.0.0-v6"></script>
+  <script defer src="./localization.js?v=1.0.0-v6"></script>
+  <script defer src="./team-builder.js?v=1.0.0-v6"></script>
+  <script defer src="./app.js?v=1.0.0-v6"></script>
   </body>
 </html>
