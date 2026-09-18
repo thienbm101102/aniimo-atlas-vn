@@ -6030,6 +6030,24 @@ button.catalog-item-reference {
   content: "";
 }
 
+@media (max-width: 600px) {
+  .layer-tabs {
+    grid-template-columns: 1fr !important;
+  }
+
+  .layer-tab {
+    min-height: 72px !important;
+  }
+
+  .layer-tab-copy strong {
+    font-size: 11px !important;
+  }
+
+  .layer-tab-copy small {
+    font-size: 8px !important;
+  }
+}
+
 @media (max-width: 520px) {
   .catalog-location-chip-list {
     grid-template-columns: minmax(0, 1fr);
@@ -9276,4 +9294,279 @@ button {
   .pin-body {
     transition: none !important;
   }
+}
+
+/* ======================================================================
+   Aniimo Atlas VN — Stable Responsive UX v5
+   Purpose: eliminate nested-scroll traps, width overflow, and mobile
+   compression while keeping the existing map/data engine intact.
+   ====================================================================== */
+
+:root {
+  --atlas-dock-width: clamp(380px, 30vw, 460px);
+  --atlas-mobile-gutter: 12px;
+}
+
+html,
+body {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.app-shell,
+.map-panel,
+.map-surface,
+.map-viewport {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Keep the entire control surface inside a predictable stacking context. */
+.sidebar {
+  contain: layout paint style !important;
+  isolation: isolate !important;
+}
+
+/* Desktop: the sidebar owns the scroll; inner workspaces don't create
+   competing scroll containers except lists that are intentionally long. */
+@media (min-width: 821px) {
+  .sidebar {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    scrollbar-gutter: stable !important;
+  }
+
+  .sidebar-workspace,
+  .tracking-workspace,
+  .checklist-workspace,
+  .catalog-workspace,
+  .team-workspace {
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+  }
+
+  .item-panel {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+  }
+}
+
+/* Mobile / tablet: one scroll surface only. This avoids the old nested
+   scroll trap where the drawer stopped receiving the mouse wheel/touch. */
+@media (max-width: 820px) {
+  .app-shell {
+    display: block !important;
+    overflow: hidden !important;
+  }
+
+  .map-panel {
+    position: fixed !important;
+    inset: 0 !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: var(--atlas-mobile-gutter) !important;
+    left: var(--atlas-mobile-gutter) !important;
+    right: auto !important;
+    bottom: var(--atlas-mobile-gutter) !important;
+    width: min(400px, calc(100vw - (var(--atlas-mobile-gutter) * 2))) !important;
+    max-width: calc(100vw - (var(--atlas-mobile-gutter) * 2)) !important;
+    height: auto !important;
+    max-height: calc(100dvh - (var(--atlas-mobile-gutter) * 2)) !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    scrollbar-gutter: stable !important;
+    padding: 12px !important;
+  }
+
+  .sidebar-workspace,
+  .tracking-workspace,
+  .checklist-workspace,
+  .catalog-workspace,
+  .team-workspace {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-bottom: 2px !important;
+  }
+
+  .item-panel,
+  .tracking-workspace,
+  .checklist-workspace,
+  .catalog-workspace,
+  .team-workspace {
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+  }
+
+  .item-list,
+  .tracking-list,
+  .checklist-list {
+    max-height: none !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    overflow: visible !important;
+  }
+
+  .catalog-sidebar-content,
+  .team-sidebar-content {
+    overflow: visible !important;
+    min-height: 0 !important;
+  }
+
+  .map-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .map-tab {
+    min-height: 74px !important;
+  }
+
+  .layer-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .layer-tab {
+    min-width: 0 !important;
+  }
+
+  .workspace-tabs {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 8 !important;
+    background: rgba(4, 11, 17, 0.92) !important;
+    backdrop-filter: blur(12px) !important;
+  }
+
+  .brand {
+    position: relative !important;
+  }
+
+  .map-toolbar {
+    left: auto !important;
+    right: 14px !important;
+    bottom: max(14px, env(safe-area-inset-bottom)) !important;
+    transform: none !important;
+  }
+
+  .map-readout-cluster {
+    left: 14px !important;
+    right: auto !important;
+    bottom: max(14px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .sidebar-collapse-button,
+  .sidebar-restore-button {
+    display: none !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .sidebar {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    top: 8px !important;
+    left: 8px !important;
+    bottom: 8px !important;
+    padding: 10px !important;
+  }
+
+  .brand {
+    min-height: 96px !important;
+    padding: 14px 48px 13px 14px !important;
+  }
+
+  .brand h1 {
+    font-size: clamp(21px, 6vw, 28px) !important;
+  }
+
+  .workspace-tab {
+    min-width: max-content !important;
+    padding-inline: 10px !important;
+  }
+
+  .map-tabs {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .layer-tabs {
+    grid-template-columns: 1fr !important;
+  }
+
+  .map-tab,
+  .layer-tab {
+    min-width: 0 !important;
+  }
+}
+
+/* Settings must always be a single, scrollable modal surface. */
+.settings-overlay {
+  display: grid !important;
+  place-items: center !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+  z-index: 1000 !important;
+}
+
+.settings-overlay[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.settings-dialog {
+  min-height: 0 !important;
+  max-height: min(88dvh, 780px) !important;
+  overflow: hidden !important;
+}
+
+.settings-content {
+  min-height: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+}
+
+/* Never allow long labels to push cards wider than the viewport. */
+.map-tab-copy,
+.layer-tab-copy,
+.catalog-sidebar-content,
+.team-sidebar-content,
+.panel-heading,
+.selection,
+.selection-title,
+.brand-copy {
+  min-width: 0 !important;
+}
+
+.map-tab-copy strong,
+.map-tab-copy small,
+.layer-tab-copy strong,
+.layer-tab-copy small,
+.selection-name,
+.brand-tagline,
+.database-meta {
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Prevent transformed cards from changing the scrollable geometry. */
+.layer-tab:hover,
+.map-tab:hover {
+  transform: none !important;
+}
+
+/* Avoid invisible fixed overlays stealing wheel/touch input. */
+.settings-overlay[hidden],
+.catalog-panel[hidden],
+.team-panel[hidden],
+.mobile-selection-panel[hidden],
+.desktop-selection-panel[hidden] {
+  pointer-events: none !important;
 }

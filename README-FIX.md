@@ -1,5 +1,14 @@
-Aniimo Atlas VN - Settings close fix
+Aniimo Atlas VN — Stable UI v5 patch
 
-This patch fixes the Settings overlay not closing because a later redesign CSS rule used `display:grid !important`, overriding the `[hidden]` rule.
+Replace index.html and styles.css in your current repository.
 
-Replace `app.js` and `styles.css` in the existing repository with these two files, then commit and push with GitHub Desktop.
+Fixes:
+- mobile/tablet drawer width no longer consumes nearly the full viewport
+- one predictable scroll surface for the left control drawer
+- removes nested-scroll trap in layer/list panels
+- long labels cannot widen cards or break grid layout
+- map remains full-screen behind the drawer
+- settings dialog remains safely scrollable and closeable
+- cache-busts styles.css to v5
+
+No data/ or assets/ files are changed by this patch.
