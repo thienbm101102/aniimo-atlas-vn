@@ -1,42 +1,48 @@
-# Aniimo Atlas VN
+# Aniimo Atlas VN — Full Interactive Edition
 
-Giao diện tiếng Việt mới dùng **trực tiếp cấu trúc dữ liệu và assets của MinMax-Aniipedia** mà không đổi schema trong `data/`.
+Bản giao diện tiếng Việt của MinMax's Aniipedia, giữ nguyên engine bản đồ, schema dữ liệu, marker, tiles và assets của source gốc; phần giao diện được thiết kế lại theo phong cách Aniimo Atlas VN.
 
-## Dữ liệu được giữ nguyên
-- `data/map_site_data.json`
-- `data/maps/*.json`
-- `data/catalog-index-v2.json`
-- `data/aniilog_data.json`
-- `data/itemlog_data.json`
-- `data/checklist_data.json`
-- `data/team_builder_mechanics.json`
-- `data/i18n/*`
-- toàn bộ `assets/`
+## Đã giữ nguyên từ source gốc
+
+- 4 bản đồ: Breezy Plains, Whisperwake Isles, Astra, The Lost Islets.
+- Pan/drag, zoom, fit, pinch zoom, canvas marker mode và hit-test marker.
+- Marker DOM + Canvas, tooltip, tọa độ con trỏ và chọn marker.
+- Underground map, chuyển khu vực underground và boundary/overlay.
+- Filter/layer, select all/reset, lọc theo search, grouped marker controls.
+- Tracking/respawn timers lưu trên trình duyệt.
+- Checklist, Aniilog, Item-log và Team Builder.
+- Chia sẻ các ghim qua share service cấu hình sẵn trong `app-config.js`.
+- GitHub Pages/static hosting, không cần build step.
+
+## Thay đổi giao diện Aniimo Atlas VN
+
+- Giao diện mặc định tiếng Việt.
+- Bộ lọc hiển thị bằng thẻ trực quan có hình ảnh + số lượng.
+- Các lớp marker mặc định **không bật**; người chơi tự bật lớp cần xem.
+- Khi chọn marker, panel chi tiết hiển thị artwork lớn, tên, hình thái, loại, khu vực, vùng, tọa độ và mô tả nếu dataset có.
+- Thẻ bản đồ có thumbnail và số lượng marker.
+- Giữ toàn bộ `data/` và `assets/` của source gốc; không migrate sang schema mới.
 
 ## Chạy local
-```text
+
+Từ thư mục này:
+
+```powershell
 python -m http.server 5173
 ```
-Mở `http://127.0.0.1:5173/`.
 
-## GitHub Pages
-Upload toàn bộ nội dung thư mục này vào repository và bật Settings → Pages → Deploy from a branch → main → /(root).
+Mở:
 
-## Giao diện mới
-`index.html`, `app-vn.js`, `styles-vn.css` là lớp presentation mới. Dữ liệu và asset gốc không bị migrate sang schema khác.
+```text
+http://127.0.0.1:5173/
+```
 
-## Tính năng
-- Bản đồ đa vùng, pan/zoom, tọa độ, filter layer, marker click, ghim, export ghim.
-- Aniimo browser dựa trên `aniilog_data.json`.
-- Kho dữ liệu dựa trên `catalog-index-v2.json`.
-- Checklist lưu localStorage.
-- Chia sẻ link map và responsive mobile.
+## GitHub Desktop
 
-## Nguồn
-Cấu trúc dữ liệu/assets được giữ từ MinMax-Aniipedia source được cung cấp trong yêu cầu. Aniimo Atlas VN là lớp giao diện cộng đồng mới, không phải website chính thức của Aniimo.
+Clone repository bằng GitHub Desktop, giải nén toàn bộ gói vào thư mục repository, commit rồi Push origin. Có thể publish trực tiếp từ branch `main`/`/(root)` hoặc dùng workflow có sẵn trong `.github/`.
 
-## UX cập nhật
-- Bộ lọc lớp bản đồ mặc định **tắt toàn bộ** để bản đồ không bị phủ marker ngay khi mở.
-- Mỗi lớp hiển thị **ảnh đại diện, màu lớp, số lượng marker và trạng thái bật/tắt**.
-- Người chơi chủ động bật/tắt từng lớp hoặc dùng “Bật tất cả / Tắt tất cả”.
-- Khi chưa bật lớp nào, bản đồ hiển thị trạng thái khám phá sạch với nút mở bộ lọc.
+## Nguồn dữ liệu
+
+Dữ liệu map, marker, tiles và assets được giữ nguyên từ source MinMax-Aniipedia mà bản này được xây dựng dựa trên. Phần giao diện tiếng Việt là lớp tùy biến của Aniimo Atlas VN.
+
+Xem `NOTICE.md` để biết thông tin nguồn và ghi công.

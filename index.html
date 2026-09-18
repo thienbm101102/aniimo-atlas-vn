@@ -1,167 +1,186 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#090d14">
-  <meta name="description" content="Aniimo Atlas VN — bản đồ tương tác và cơ sở dữ liệu Aniimo tiếng Việt dựa trên cấu trúc dữ liệu MinMax-Aniipedia.">
-  <title>Aniimo Atlas VN</title>
-  <link rel="icon" href="assets/aniilog/element-fire.png">
-  <link rel="manifest" href="site.webmanifest">
-  <link rel="stylesheet" href="styles-vn.css">
-</head>
-<body>
-  <div id="app" class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark">A</div>
-        <div>
-          <div class="brand-title">Aniimo Atlas</div>
-          <div class="brand-subtitle">Bản đồ & dữ liệu VN</div>
-        </div>
-      </div>
-      <nav class="nav-tabs" aria-label="Điều hướng">
-        <button class="nav-btn active" data-view="map"><span>⌖</span><b>Bản đồ</b></button>
-        <button class="nav-btn" data-view="aniimo"><span>◉</span><b>Aniimo</b></button>
-        <button class="nav-btn" data-view="items"><span>▦</span><b>Kho dữ liệu</b></button>
-        <button class="nav-btn" data-view="checklist"><span>✓</span><b>Checklist</b></button>
-      </nav>
-      <div class="side-section">
-        <div class="section-kicker">BẢN ĐỒ</div>
-        <div id="mapList" class="map-list"></div>
-      </div>
-      <div class="side-foot">
-        <div class="source-badge">DATA SCHEMA · MINMAX</div>
-        <div class="muted">Dữ liệu trong <code>data/</code> và <code>assets/</code> được giữ nguyên cấu trúc gốc.</div>
-      </div>
-    </aside>
-
-    <main class="main" id="main">
-      <header class="topbar">
-        <button class="icon-btn mobile-only" id="sidebarToggle" title="Menu">☰</button>
-        <div class="topbar-search">
-          <span class="search-icon">⌕</span>
-          <input id="globalSearch" type="search" placeholder="Tìm Aniimo, vật phẩm, khu vực, tọa độ…" autocomplete="off">
-          <kbd>Ctrl K</kbd>
-        </div>
-        <div class="top-actions">
-          <button class="icon-btn" id="shareBtn" title="Chia sẻ bản đồ">⤴</button>
-          <button class="icon-btn" id="fullscreenBtn" title="Toàn màn hình">⛶</button>
-          <button class="profile-chip" id="resetBtn" title="Xóa bộ lọc / về mặc định">VN</button>
-        </div>
-      </header>
-
-      <section class="view map-view" id="view-map">
-        <div class="map-toolbar">
-          <div class="map-title-wrap">
-            <div class="eyebrow">BẢN ĐỒ TƯƠNG TÁC</div>
-            <h1 id="mapTitle">Breezy Plains</h1>
-            <div id="mapMeta" class="muted"></div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1a1f22">
+    <title>Aniimo Atlas VN</title>
+    <link rel="stylesheet" href="./styles.css?v=0.5.32">
+  </head>
+  <body>
+    <main id="appShell" class="app-shell">
+      <aside id="sidebar" class="sidebar" aria-label="Điều khiển bản đồ và tiến trình">
+        <header class="brand">
+          <div class="brand-copy">
+            <h1>Aniimo Atlas VN</h1><p class="brand-tagline">Bản đồ cộng đồng • Aniilog • Checklist</p>
+            <button id="appVersion" class="app-version app-version-button" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false">Version loading</button>
+            <p id="mapMeta" class="database-meta">Đang tải cơ sở dữ liệu…</p>
           </div>
-          <div class="map-actions">
-            <div class="segmented" id="mapSwitch"></div>
-            <button class="ghost-btn" id="fitBtn">⤢ Vừa khung</button>
-            <button class="ghost-btn" id="locateBtn">⌖ Tâm bản đồ</button>
-          </div>
+          <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Open settings" title="Settings">
+            <svg class="settings-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </header>
+
+        <div id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Các khu vực điều hướng">
+          <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true">Bản đồ</button>
+          <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false">Theo dõi</button>
+          <button id="checklistWorkspaceTab" class="workspace-tab" data-workspace-view="checklist" type="button" role="tab" aria-controls="checklistWorkspace" aria-selected="false">Bộ sưu tập</button>
+          <button id="aniilogWorkspaceTab" class="workspace-tab" data-workspace-view="aniilog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">Aniilog</button>
+          <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">Kho đồ</button>
+          <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false">Đội hình</button>
         </div>
 
-        <div class="map-layout">
-          <section class="map-panel">
-            <div class="map-stage" id="mapStage">
-              <div class="map-world" id="mapWorld">
-                <img id="mapImage" class="map-image" alt="Bản đồ Aniimo">
-                <canvas id="markerCanvas"></canvas>
-                <div class="map-crosshair" id="mapCrosshair"></div>
-              </div>
-              <div class="map-overlay top-left">
-                <div class="coordinate-readout" id="coordReadout">X 0 · Y 0</div>
-              </div>
-              <div class="map-overlay top-right toolbar-stack">
-                <button class="map-tool" id="zoomInBtn">＋</button>
-                <button class="map-tool" id="zoomOutBtn">－</button>
-              </div>
-              <div class="map-overlay bottom-left">
-                <div class="map-legend" id="mapLegend"></div>
-              </div>
-              <div class="map-explore-empty" id="mapExploreEmpty">
-                <div class="map-empty-art">✦</div>
-                <div>
-                  <strong>Bản đồ đang sạch</strong>
-                  <p>Hãy mở <b>Lớp</b> và chọn những gì bạn muốn xem.</p>
-                </div>
-                <button class="ghost-btn" id="openLayersCta">Mở bộ lọc</button>
-              </div>
-              <div class="map-overlay bottom-right">
-                <button class="map-tool wide" id="layersBtn">☷ Lớp</button>
-              </div>
+        <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
+          <section class="panel">
+            <div id="mapTabs" class="map-tabs" role="tablist" aria-label="Các bản đồ"></div>
+            <label class="search-label" for="searchInput">Tìm kiếm</label>
+            <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Tên, khu vực, tọa độ">
+            <div class="toolbar" aria-label="Filters">
+              <button id="selectAllButton" type="button">Bật tất cả</button>
+              <button id="selectNoneButton" type="button">Tắt tất cả</button>
             </div>
-            <div class="map-statusbar">
-              <div id="markerStatus">Đang tải marker…</div>
-              <div class="map-status-actions">
-                <button class="text-btn" id="clearPinsBtn">Bỏ ghim</button>
-                <button class="text-btn" id="exportPinsBtn">Xuất ghim</button>
-              </div>
-            </div>
+            <button id="sharePinsButton" class="share-pins-button" type="button" disabled>Chia sẻ các ghim</button>
+            <span id="sharePinsStatus" class="visually-hidden" role="status" aria-live="polite"></span>
+            <p id="sharePinsNotice" class="share-pins-notice" role="status" aria-live="polite" hidden></p>
           </section>
 
-          <aside class="map-drawer" id="mapDrawer">
-            <div class="drawer-header">
-              <div>
-                <div class="eyebrow">BỘ LỌC</div>
-                <h2>Lớp bản đồ</h2>
-              </div>
-              <button class="icon-btn" id="closeDrawerBtn">×</button>
-            </div>
-            <div class="drawer-intro">
-              <div class="drawer-intro-main">
-                <span class="drawer-orb">✦</span>
-                <div>
-                  <strong>Tự chọn lớp hiển thị</strong>
-                  <p>Không có marker nào tự bật. Chạm vào thẻ để khám phá.</p>
+          <section class="panel item-panel">
+            <div class="panel-heading">
+              <div class="filter-heading-title">
+                <h2>Lớp hiển thị</h2>
+                <button class="filter-shortcut-info" type="button" aria-label="Filter shortcuts" aria-describedby="filterShortcutTooltip">i</button>
+                <div id="filterShortcutTooltip" class="filter-shortcut-tooltip" role="tooltip">
+                  <strong>Phím tắt bản đồ</strong>
+                  <span>Nhấp đúp một lớp để bật toàn bộ mục của lớp đó.</span>
+                  <span>Nhấp chuột phải marker để bỏ ghim vị trí đó.</span>
                 </div>
               </div>
-              <div id="layerSummary" class="layer-summary">0 / 0 lớp đang bật</div>
+              <span id="filterCount" class="filter-count" aria-live="polite">0 / 0</span>
             </div>
-            <div class="drawer-actions">
-              <button class="small-btn" id="selectAllBtn">Bật tất cả</button>
-              <button class="small-btn" id="clearAllBtn">Tắt tất cả</button>
-            </div>
-            <div class="filter-search"><input id="layerSearch" type="search" placeholder="Tìm lớp, tên Aniimo, vật phẩm…"></div>
-            <div id="layerList" class="layer-list"></div>
-          </aside>
-
-          <aside class="detail-panel" id="detailPanel">
-            <div class="detail-empty" id="detailEmpty">
-              <div class="empty-icon">⌖</div>
-              <h3>Chọn một marker</h3>
-              <p>Nhấp vào điểm trên bản đồ để xem chi tiết, tọa độ và khu vực.</p>
-            </div>
-            <div id="detailContent" hidden></div>
-          </aside>
+            <div id="layerTabs" class="layer-tabs" role="tablist" aria-label="Marker layers"></div>
+            <div id="itemList" class="item-list"></div>
+          </section>
         </div>
-      </section>
 
-      <section class="view data-view" id="view-aniimo" hidden>
-        <div class="data-head">
-          <div><div class="eyebrow">ANIILOG</div><h1>Danh mục Aniimo</h1><div class="muted" id="aniimoCount"></div></div>
-          <div class="filter-row"><input id="aniimoSearch" class="field" placeholder="Tìm Aniimo…"><select id="roleFilter" class="field"><option value="">Tất cả vai trò</option></select><select id="elementFilter" class="field"><option value="">Tất cả nguyên tố</option></select></div>
+        <section id="trackingWorkspace" class="tracking-workspace" role="tabpanel" aria-labelledby="trackingWorkspaceTab" hidden>
+          <div class="panel-heading">
+            <h2>Theo dõi</h2>
+            <span id="trackingCount" class="filter-count" aria-live="polite">0 tracked</span>
+          </div>
+          <div id="trackingList" class="tracking-list"></div>
+        </section>
+
+        <section id="checklistWorkspace" class="checklist-workspace" role="tabpanel" aria-labelledby="checklistWorkspaceTab" hidden>
+          <div class="panel-heading">
+            <h2>Bộ sưu tập</h2>
+            <span id="checklistCount" class="filter-count" aria-live="polite">Đang tải</span>
+          </div>
+          <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Checklist categories"></div>
+          <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Lumin checklist sources" hidden></div>
+          <label class="search-label" for="checklistSearchInput">Tìm kiếm</label>
+          <input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc vị trí">
+          <div id="checklistList" class="checklist-list" aria-live="polite"></div>
+        </section>
+
+        <section id="catalogWorkspace" class="catalog-workspace" role="tabpanel" aria-labelledby="aniilogWorkspaceTab" hidden>
+          <div id="catalogSidebarContent" class="catalog-sidebar-content"></div>
+        </section>
+
+        <section id="teamWorkspace" class="team-workspace" role="tabpanel" aria-labelledby="teamWorkspaceTab" hidden>
+          <div id="teamSidebarContent" class="team-sidebar-content"></div>
+        </section>
+
+        <section id="desktopSelectionPanel" class="panel detail-panel" aria-live="polite" hidden>
+          <div class="panel-heading">
+            <h2>Thông tin điểm chọn</h2>
+            <div class="selection-heading-actions">
+              <button id="selectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
+              <button id="desktopSelectionToggle" class="selection-minimize-button" type="button" aria-controls="selectionDetail" aria-expanded="true" aria-label="Thu gọn thông tin" title="Thu gọn thông tin">&minus;</button>
+              <button id="selectionCloseButton" class="selection-close-button" type="button" aria-label="Đóng thông tin" title="Đóng thông tin">&times;</button>
+            </div>
+          </div>
+          <div id="selectionDetail" class="selection empty">Chưa chọn marker</div>
+        </section>
+      </aside>
+
+      <button id="sidebarRestoreButton" class="sidebar-restore-button" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Mở thanh bên" title="Mở thanh bên" hidden>
+        <span aria-hidden="true">&rsaquo;</span>
+      </button>
+
+      <section class="map-panel" aria-label="Bản đồ tương tác và dữ liệu">
+        <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn thanh bên" title="Thu gọn thanh bên">
+          <span aria-hidden="true">&lsaquo;</span>
+        </button>
+        <div id="mapSurface" class="map-surface">
+          <div class="map-toolbar">
+            <button id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
+            <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+            <button id="fitButton" type="button">Vừa khung</button>
+          </div>
+          <div class="map-readout-cluster">
+            <button id="undergroundPlanToggle" class="map-underground-plan-toggle" type="button" aria-label="Chuyển khu vực ngầm" title="Chuyển khu vực ngầm" hidden>
+              <span>Khu vực</span>
+              <strong id="undergroundPlanToggleLabel">All</strong>
+            </button>
+            <button id="undergroundLayerToggle" class="map-layer-toggle" type="button" aria-pressed="false" aria-label="Hiện bản đồ ngầm" title="Hiện bản đồ ngầm" hidden>
+              <img id="undergroundLayerToggleIcon" src="./assets/icons/map-layer-underground-off.png" alt="">
+            </button>
+            <div id="coordinateReadout" class="coordinate-readout">X 0, Y 0</div>
+          </div>
+          <div id="mapViewport" class="map-viewport">
+            <div id="mapWorld" class="map-world">
+              <div id="mapTiles" class="map-tiles" aria-hidden="true"></div>
+              <img id="mapImage" class="map-image" alt="">
+              <div id="mapUndergroundLayer" class="map-underground-layer" aria-hidden="true" hidden></div>
+            </div>
+            <div id="pinLayer" class="pin-layer"></div>
+            <canvas id="pinCanvas" class="pin-canvas" aria-hidden="true"></canvas>
+            <div id="pinTooltip" class="pin-tooltip" hidden></div>
+          </div>
+          <section id="mobileSelectionPanel" class="panel mobile-selection-panel is-minimized" aria-live="polite" hidden>
+            <div class="panel-heading mobile-selection-heading">
+              <h2>Thông tin điểm chọn</h2>
+              <div class="mobile-selection-actions">
+                <button id="mobileSelectionCatalogShortcut" class="selection-catalog-shortcut" type="button" hidden></button>
+                <button id="mobileSelectionToggle" class="mobile-selection-toggle" type="button" aria-controls="mobileSelectionDetail" aria-expanded="false" aria-label="Mở rộng thông tin" title="Mở rộng thông tin">+</button>
+                <button id="mobileSelectionCloseButton" class="selection-close-button mobile-selection-close-button" type="button" aria-label="Đóng thông tin" title="Đóng thông tin">&times;</button>
+              </div>
+            </div>
+            <div id="mobileSelectionDetail" class="selection empty">Chưa chọn marker</div>
+          </section>
         </div>
-        <div id="aniimoGrid" class="card-grid"></div>
-      </section>
-
-      <section class="view data-view" id="view-items" hidden>
-        <div class="data-head"><div><div class="eyebrow">CATALOG INDEX</div><h1>Kho dữ liệu</h1><div class="muted" id="itemCount"></div></div><div class="filter-row"><input id="itemSearch" class="field" placeholder="Tìm vật phẩm…"><select id="itemCategoryFilter" class="field"><option value="">Tất cả danh mục</option></select></div></div>
-        <div id="itemGrid" class="item-grid"></div>
-      </section>
-
-      <section class="view data-view" id="view-checklist" hidden>
-        <div class="data-head"><div><div class="eyebrow">PROGRESS</div><h1>Checklist</h1><div class="muted" id="checklistSummary"></div></div><div class="filter-row"><input id="checkSearch" class="field" placeholder="Tìm mục…"><select id="checkCategory" class="field"><option value="">Tất cả</option></select></div></div>
-        <div id="checklistList" class="checklist"></div>
+        <section id="catalogPanel" class="catalog-panel" role="region" aria-live="polite" hidden></section>
+        <section id="teamPanel" class="team-panel" role="region" aria-live="polite" hidden></section>
       </section>
     </main>
-  </div>
 
-  <div class="toast" id="toast" role="status"></div>
-  <script src="app-vn.js"></script>
-</body>
+    <div id="settingsOverlay" class="settings-overlay" hidden>
+      <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="settings-dialog-heading">
+          <h2 id="settingsTitle">Cài đặt</h2>
+          <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Đóng cài đặt" title="Đóng cài đặt">&times;</button>
+        </div>
+        <div id="settingsContent" class="settings-content"></div>
+      </section>
+    </div>
+
+    <div id="changelogOverlay" class="settings-overlay" hidden>
+      <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+        <div class="settings-dialog-heading">
+          <h2 id="changelogTitle">Lịch sử thay đổi</h2>
+          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng lịch sử thay đổi" title="Đóng lịch sử thay đổi">&times;</button>
+        </div>
+        <div id="changelogContent" class="changelog-content" aria-live="polite">Loading GitHub changes...</div>
+        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">View all changes on GitHub</a>
+      </section>
+    </div>
+
+  <script defer src="./app-config.js?v=0.5.35"></script>
+  <script defer src="./localization.js?v=0.5.35"></script>
+  <script defer src="./team-builder.js?v=0.5.37"></script>
+  <script defer src="./app.js?v=0.5.37"></script>
+  </body>
 </html>
