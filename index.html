@@ -3,9 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#1a1f22">
+    <meta name="theme-color" content="#07111a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
     <title>Aniimo Atlas VN — Bản đồ &amp; Aniimo</title>
-    <link rel="stylesheet" href="./styles.css?v=0.5.37"><link rel="stylesheet" href="./atlas-vn-ui.css?v=9">
+    <link rel="stylesheet" href="./styles.css?v=0.5.37"><link rel="stylesheet" href="./atlas-vn-ui.css?v=10">
   </head>
   <body>
     <main id="appShell" class="app-shell">
@@ -13,7 +16,7 @@
         <header class="brand">
           <div class="brand-copy">
             <h1>Aniimo Atlas VN</h1>
-            <button id="appVersion" class="app-version app-version-button" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false">v0.5.37</button>
+            <span id="appVersion" class="app-version app-version-static">v0.5.37</span>
             <p id="mapMeta" class="database-meta">BẢN ĐỒ CỘNG ĐỒNG • ANIIMO</p>
           </div>
           <button id="settingsButton" class="settings-gear-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">
@@ -164,17 +167,6 @@
           <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Đóng cài đặt" title="Đóng cài đặt">&times;</button>
         </div>
         <div id="settingsContent" class="settings-content"></div>
-      </section>
-    </div>
-
-    <div id="changelogOverlay" class="settings-overlay" hidden data-legacy-changelog="true">
-      <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
-        <div class="settings-dialog-heading">
-          <h2 id="changelogTitle">Nhật ký</h2>
-          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng nhật ký" title="Đóng nhật ký">&times;</button>
-        </div>
-        <div id="changelogContent" class="changelog-content" aria-live="polite"></div>
-        
       </section>
     </div>
 

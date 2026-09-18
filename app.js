@@ -8324,9 +8324,14 @@ function renderItems() {
       image.setAttribute("aria-hidden", "true");
       tab.append(image);
     }
-    const tabLabel = document.createElement("span");
-    tabLabel.textContent = layer.label;
-    tab.append(tabLabel);
+    const tabCopy = document.createElement("span");
+    tabCopy.textContent = layer.label;
+    const tabMeta = document.createElement("small");
+    tabMeta.className = "layer-tab-meta";
+    const uniqueKinds = new Set(layerItems.map((entry) => entry?.item_id).filter(Boolean)).size;
+    const markerCount = layerItems.length.toLocaleString("vi-VN");
+    tabMeta.textContent = `${uniqueKinds.toLocaleString("vi-VN")} loại · ${markerCount} vị trí`;
+    tab.append(tabCopy, tabMeta);
     els.layerTabs.append(tab);
 
     const section = document.createElement("section");
@@ -9186,15 +9191,10 @@ function bindEvents() {
   els.aniilogWorkspaceTab.addEventListener("click", () => setSidebarView("aniilog"));
   els.itemlogWorkspaceTab.addEventListener("click", () => setSidebarView("itemlog"));
   els.teamWorkspaceTab.addEventListener("click", () => setSidebarView("team"));
-  els.appVersion.addEventListener("click", openChangelog);
   els.settingsButton.addEventListener("click", openSettings);
   els.settingsCloseButton.addEventListener("click", closeSettings);
   els.settingsOverlay.addEventListener("click", (event) => {
     if (event.target === els.settingsOverlay) closeSettings();
-  });
-  els.changelogCloseButton.addEventListener("click", closeChangelog);
-  els.changelogOverlay.addEventListener("click", (event) => {
-    if (event.target === els.changelogOverlay) closeChangelog();
   });
   els.workspaceTabs.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
