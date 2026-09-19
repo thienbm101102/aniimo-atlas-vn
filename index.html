@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0b0e13">
-    <meta name="description" content="ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo">
-    <title>ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo</title>
+    <meta name="description" content="Haruno Aniipedia — Kho dữ liệu & bản đồ Aniimo">
+    <title>Haruno Aniipedia</title>
     <script>
       (() => {
         // Resolve one stable site root for both GitHub Pages project sites
@@ -52,9 +52,11 @@
     <main id="appShell" class="app-shell">
       <header class="app-topbar">
         <div class="brand-lockup">
-          <div class="brand-mark" aria-hidden="true">A</div>
+          <div class="brand-mark">
+  <img src="assets/logo.png" alt="Aniipedia">
+</div>
           <div class="brand-copy">
-            <div class="brand-name">ANIIPEDIA</div>
+            <div class="brand-name">Haruno Aniipedia</div>
             <div class="brand-subtitle">Kho dữ liệu & bản đồ Aniimo</div>
           </div>
         </div>
@@ -62,7 +64,7 @@
         <div class="global-search-shell" id="globalSearchShell">
           <label class="visually-hidden" for="globalSearchInput">Tìm kiếm toàn hệ thống</label>
           <div class="global-search-field">
-            <span class="global-search-icon" aria-hidden="true">⌕</span>
+            <span class="global-search-icon" aria-hidden="true">🔎</span>
             <input id="globalSearchInput" type="search" autocomplete="off" placeholder="Tìm Aniimo, vật phẩm, kỹ năng, địa điểm…">
             <kbd>Ctrl K</kbd>
           </div>
@@ -71,29 +73,26 @@
 
         <nav id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Điều hướng chính">
           <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true">
-            <span class="workspace-tab-icon" aria-hidden="true">⌂</span><span>Bản đồ</span>
+            <span class="workspace-tab-icon" aria-hidden="true">🌎</span><span>Bản đồ</span>
           </button>
           <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true">◷</span><span>Theo dõi</span>
+            <span class="workspace-tab-icon" aria-hidden="true">🕐</span><span>Theo dõi</span>
           </button>
           <button id="checklistWorkspaceTab" class="workspace-tab" data-workspace-view="checklist" type="button" role="tab" aria-controls="checklistWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true">✓</span><span>Danh sách</span>
+            <span class="workspace-tab-icon" aria-hidden="true">📋</span><span>Danh sách</span>
           </button>
           <button id="aniilogWorkspaceTab" class="workspace-tab" data-workspace-view="aniilog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true">✦</span><span>Aniilog</span>
+            <span class="workspace-tab-icon" aria-hidden="true">🐾</span><span>Aniilog</span>
           </button>
           <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true">◈</span><span>Kho vật phẩm</span>
+            <span class="workspace-tab-icon" aria-hidden="true">📦</span><span>Kho vật phẩm</span>
           </button>
           <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true">♜</span><span>Đội hình</span>
+            <span class="workspace-tab-icon" aria-hidden="true">🎮</span><span>Đội hình</span>
           </button>
         </nav>
 
         <div class="topbar-actions">
-          <button id="appVersion" class="topbar-action topbar-version" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false" title="Xem lịch sử cập nhật">
-            <span class="status-dot" aria-hidden="true"></span><span>Đang tải</span>
-          </button>
           <button id="settingsButton" class="topbar-action topbar-icon-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">⚙</button>
         </div>
       </header>
@@ -102,11 +101,10 @@
         <aside id="sidebar" class="sidebar" aria-label="Bảng điều khiển ngữ cảnh">
           <div class="context-head">
             <div>
-              <div class="eyebrow">KHÔNG GIAN LÀM VIỆC</div>
-              <h1 id="contextTitle">Bản đồ thế giới</h1>
+              <div class="eyebrow">Nguồn dữ liệu: MinMax's Aniipedia</div>
+              <h1 id="contextTitle">Bản Đồ Thế Giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
-            <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn bảng điều khiển" title="Thu gọn bảng điều khiển">‹</button>
           </div>
 
           <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
@@ -118,7 +116,7 @@
               <div id="mapTabs" class="map-tabs" role="tablist" aria-label="Các bản đồ"></div>
               <label class="search-label" for="searchInput">Tìm trên bản đồ</label>
               <div class="context-search">
-                <span aria-hidden="true">⌕</span>
+                <span aria-hidden="true">🔎</span>
                 <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Tên, khu vực hoặc tọa độ">
               </div>
               <div class="toolbar" aria-label="Bộ chọn marker">
@@ -175,7 +173,7 @@
             <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Danh mục checklist"></div>
             <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Nguồn checklist Lumen" hidden></div>
             <label class="search-label" for="checklistSearchInput">Tìm checklist</label>
-            <div class="context-search"><span aria-hidden="true">⌕</span><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
+            <div class="context-search"><span aria-hidden="true">🔎</span><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
             <div id="checklistList" class="checklist-list" aria-live="polite"></div>
           </section>
 
