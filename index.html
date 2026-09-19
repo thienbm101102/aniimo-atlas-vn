@@ -52,6 +52,11 @@
     <main id="appShell" class="app-shell">
       <header class="app-topbar">
         <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img" aria-label="Aniipedia">
+              <path d="M24 4 7.5 42h7.1l3.2-8h12.4l3.2 8h7.1L24 4Zm0 11.3 4.6 11.8h-9.2L24 15.3Z" fill="currentColor"/>
+            </svg>
+          </div>
           <div class="brand-copy">
             <div class="brand-name">Haruno Aniipedia</div>
             <div class="brand-subtitle">Kho dữ liệu & bản đồ Aniimo</div>
@@ -61,7 +66,7 @@
         <div class="global-search-shell" id="globalSearchShell">
           <label class="visually-hidden" for="globalSearchInput">Tìm kiếm toàn hệ thống</label>
           <div class="global-search-field">
-            <span class="global-search-icon" aria-hidden="true">🔎</span>
+            <span class="global-search-icon" aria-hidden="true">⌕</span>
             <input id="globalSearchInput" type="search" autocomplete="off" placeholder="Tìm Aniimo, vật phẩm, kỹ năng, địa điểm…">
             <kbd>Ctrl K</kbd>
           </div>
@@ -90,6 +95,9 @@
         </nav>
 
         <div class="topbar-actions">
+          <button id="appVersion" class="topbar-action topbar-version" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false" title="Xem lịch sử cập nhật">
+            <span class="status-dot" aria-hidden="true"></span><span>Đang tải</span>
+          </button>
           <button id="settingsButton" class="topbar-action topbar-icon-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">⚙</button>
         </div>
       </header>
@@ -99,9 +107,10 @@
           <div class="context-head">
             <div>
               <div class="eyebrow">Nguồn dữ liệu: MinMax's Aniipedia</div>
-              <h1 id="contextTitle">Bản Đồ Thế Giới</h1>
+              <h1 id="contextTitle">Bản đồ thế giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
+            <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn bảng điều khiển" title="Thu gọn bảng điều khiển">‹</button>
           </div>
 
           <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
@@ -113,7 +122,7 @@
               <div id="mapTabs" class="map-tabs" role="tablist" aria-label="Các bản đồ"></div>
               <label class="search-label" for="searchInput">Tìm trên bản đồ</label>
               <div class="context-search">
-                <span aria-hidden="true">🔎</span>
+                <span aria-hidden="true">⌕</span>
                 <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Tên, khu vực hoặc tọa độ">
               </div>
               <div class="toolbar" aria-label="Bộ chọn marker">
@@ -170,7 +179,7 @@
             <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Danh mục checklist"></div>
             <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Nguồn checklist Lumen" hidden></div>
             <label class="search-label" for="checklistSearchInput">Tìm checklist</label>
-            <div class="context-search"><span aria-hidden="true">🔎</span><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
+            <div class="context-search"><span aria-hidden="true">⌕</span><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
             <div id="checklistList" class="checklist-list" aria-live="polite"></div>
           </section>
 
@@ -251,6 +260,17 @@
           <button id="settingsCloseButton" class="settings-close-button" type="button" aria-label="Đóng cài đặt" title="Đóng">×</button>
         </div>
         <div id="settingsContent" class="settings-content"></div>
+      </section>
+    </div>
+
+    <div id="changelogOverlay" class="settings-overlay" hidden>
+      <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+        <div class="settings-dialog-heading">
+          <div><div class="section-kicker">LỊCH SỬ</div><h2 id="changelogTitle">Lịch sử cập nhật</h2></div>
+          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng lịch sử cập nhật" title="Đóng">×</button>
+        </div>
+        <div id="changelogContent" class="changelog-content" aria-live="polite">Đang tải thay đổi từ GitHub…</div>
+        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">Xem toàn bộ thay đổi trên GitHub</a>
       </section>
     </div>
 
