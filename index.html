@@ -47,7 +47,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260919-1920-modal-visibility">
+    <link rel="stylesheet" href="./styles.css?v=20260919-1445-giftcode">
   </head>
   <body>
     <main id="appShell" class="app-shell">
@@ -87,6 +87,9 @@
           </button>
           <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
             <span>Kho vật phẩm</span>
+          </button>
+          <button id="giftcodeWorkspaceTab" class="workspace-tab" data-workspace-view="giftcode" type="button" role="tab" aria-controls="giftcodePanel" aria-selected="false">
+            <span>Giftcode</span>
           </button>
           <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false">
             <span>Đội hình</span>
@@ -247,6 +250,7 @@
           </div>
           <section id="catalogPanel" class="catalog-panel" role="region" aria-live="polite" hidden></section>
           <section id="teamPanel" class="team-panel" role="region" aria-live="polite" hidden></section>
+          <section id="giftcodePanel" class="giftcode-panel" role="region" aria-live="polite" hidden></section>
         </section>
       </div>
     </main>
@@ -292,6 +296,6 @@
     <script defer src="./localization.js?v=20260919-0915-null-safe"></script>
     <script defer src="./ui-enhancements.js?v=20260919-0915-null-safe"></script>
     <script defer src="./team-builder.js?v=20260919-0915-null-safe"></script>
-    <script defer src="./app.js?v=20260919-0915-null-safe"></script>
+    <script defer src="./app.js?v=20260919-1445-giftcode"></script>
   </body>
 </html>

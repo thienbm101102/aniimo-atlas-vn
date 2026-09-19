@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-19",
+  "codes": [
+    {"code":"aniimowelcome","status":"active","rewards":["50 Glimmer","5 Aniipod Pro","5 Growth Flower"],"updated_at":"2026-09-18"},
+    {"code":"twinewithaniimo","status":"active","rewards":["50 Glimmer","5 Aniipod Pro","5 Growth Flower"],"updated_at":"2026-09-18"},
+    {"code":"anyoneaniimo","status":"active","rewards":["5 Aniipod","10,000 Credits"],"updated_at":"2026-09-18"},
+    {"code":"aniimoopenworld","status":"active","rewards":["5 Aniipod","10,000 Credits"],"updated_at":"2026-09-18"},
+    {"code":"aniimolaunch2026","status":"active","rewards":["5 Aniipod","10,000 Credits"],"updated_at":"2026-09-18"},
+    {"code":"ANIIMOGIFT","status":"active","rewards":["10 Glimmer","20,000 Credits","10 Growth Flowers","5 Aniipod Pro"],"updated_at":"2026-09-18"},
+    {"code":"Aniimo2026","status":"active","rewards":["20 Glimmer"],"updated_at":"2026-09-18"},
+    {"code":"aniimoparty","status":"limited","rewards":["50 Glimmer","5 Aniipod Pro","5 Growth Flower"],"updated_at":"2026-09-18"},
+    {"code":"aniimobonus","status":"active","rewards":["50 Glimmer"],"updated_at":"2026-09-18"}
+  ],
+  "sources": [
+    "https://beebom.com/aniimo-codes/",
+    "https://aniimogame.net/codes/",
+    "https://www.pockettactics.com/aniimo/codes"
+  ]
+}

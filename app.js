@@ -12,6 +12,9 @@ const ITEMLOG_DATA_URL =
 const ANIILOG_DATA_URL = window.ANIIPEDIA_URL
   ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648-pages-v002")
   : "./data/aniilog_data.json?v=20260919-0648-pages-v002";
+const GIFTCODE_DATA_URL = window.ANIIPEDIA_URL
+  ? window.ANIIPEDIA_URL("./data/giftcodes.json?v=20260919-1445-giftcode")
+  : "./data/giftcodes.json?v=20260919-1445-giftcode";
 const APP_VERSION = "v0.5.38";
 const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
@@ -407,6 +410,11 @@ const state = {
     aniilog: "aniimo:1005100",
     itemlog: "item:4010132",
   },
+  giftcodes: null,
+  giftcodeLoadError: "",
+  giftcodeLoadPromise: null,
+  giftcodeSearch: "",
+  giftcodeRedeemed: new Set(),
   catalogCategory: {
     aniilog: "all",
     itemlog: "all",
@@ -454,6 +462,7 @@ const els = {
   checklistWorkspaceTab: document.querySelector("#checklistWorkspaceTab"),
   aniilogWorkspaceTab: document.querySelector("#aniilogWorkspaceTab"),
   itemlogWorkspaceTab: document.querySelector("#itemlogWorkspaceTab"),
+  giftcodeWorkspaceTab: document.querySelector("#giftcodeWorkspaceTab"),
   teamWorkspaceTab: document.querySelector("#teamWorkspaceTab"),
   settingsButton: document.querySelector("#settingsButton"),
   sidebarCollapseButton: document.querySelector("#sidebarCollapseButton"),
@@ -498,6 +507,7 @@ const els = {
   appStartupNotice: document.querySelector("#appStartupNotice"),
   catalogPanel: document.querySelector("#catalogPanel"),
   teamPanel: document.querySelector("#teamPanel"),
+  giftcodePanel: document.querySelector("#giftcodePanel"),
   mapViewport: document.querySelector("#mapViewport"),
   mapWorld: document.querySelector("#mapWorld"),
   mapTiles: document.querySelector("#mapTiles"),
@@ -2204,7 +2214,7 @@ function isCatalogView(view = state.sidebarView) {
 }
 
 function isFullPanelView(view = state.sidebarView) {
-  return isCatalogView(view) || view === "team";
+  return isCatalogView(view) || view === "team" || view === "giftcode";
 }
 
 const ANIILOG_CLASS_ORDER = Object.freeze(["DPS", "REGEN", "BREAK", "HEALER", "SUPPORT"]);
@@ -6345,6 +6355,228 @@ function renderChecklist() {
   els.checklistList.append(fragment);
 }
 
+function ensureGiftcodeData() {
+  if (state.giftcodes) return Promise.resolve(state.giftcodes);
+  if (state.giftcodeLoadPromise) return state.giftcodeLoadPromise;
+  state.giftcodeLoadPromise = fetch(GIFTCODE_DATA_URL)
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Could not load ${GIFTCODE_DATA_URL}`);
+      const payload = await response.json();
+      if (!Array.isArray(payload?.codes)) throw new Error("Giftcode data is invalid");
+      state.giftcodes = payload;
+      state.giftcodeLoadError = "";
+      return payload;
+    })
+    .catch((error) => {
+      state.giftcodeLoadError = error instanceof Error ? error.message : String(error);
+      state.giftcodes = null;
+      return null;
+    })
+    .finally(() => {
+      state.giftcodeLoadPromise = null;
+    });
+  return state.giftcodeLoadPromise;
+}
+
+function giftcodeStatusLabel(code) {
+  const status = String(code?.status || "active").toLowerCase();
+  if (status === "limited") return "Có thể giới hạn lượt nhận";
+  if (status === "expired") return "Đã hết hạn";
+  return "Đang được báo cáo hoạt động";
+}
+
+function giftcodeMatches(code) {
+  const query = String(state.giftcodeSearch || "").trim().toLowerCase();
+  if (!query) return true;
+  return [code?.code, ...(Array.isArray(code?.rewards) ? code.rewards : [])]
+    .join(" ")
+    .toLowerCase()
+    .includes(query);
+}
+
+function saveGiftcodeRedeemedState() {
+  try {
+    localStorage.setItem("aniipedia-giftcodes-redeemed-v1", JSON.stringify([...state.giftcodeRedeemed]));
+  } catch {
+    // Non-critical local persistence.
+  }
+}
+
+function loadGiftcodeRedeemedState() {
+  try {
+    const raw = JSON.parse(localStorage.getItem("aniipedia-giftcodes-redeemed-v1") || "[]");
+    if (Array.isArray(raw)) state.giftcodeRedeemed = new Set(raw.map((value) => String(value)));
+  } catch {
+    state.giftcodeRedeemed = new Set();
+  }
+}
+
+function copyGiftcode(code, button) {
+  if (!code) return;
+  const restore = () => {
+    button.textContent = "Sao chép";
+    button.classList.remove("is-copied");
+  };
+  const copyWithFallback = () => {
+    const area = document.createElement("textarea");
+    area.value = code;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.append(area);
+    area.select();
+    try {
+      document.execCommand("copy");
+      button.textContent = "Đã sao chép";
+      button.classList.add("is-copied");
+      window.setTimeout(restore, 1200);
+    } finally {
+      area.remove();
+    }
+  };
+  if (!navigator.clipboard?.writeText) return copyWithFallback();
+  navigator.clipboard.writeText(code).then(() => {
+    button.textContent = "Đã sao chép";
+    button.classList.add("is-copied");
+    window.setTimeout(restore, 1200);
+  }).catch(copyWithFallback);
+}
+
+function renderGiftcodes() {
+  if (!els.giftcodePanel) return;
+  els.giftcodePanel.textContent = "";
+
+  const shell = document.createElement("div");
+  shell.className = "giftcode-shell";
+  const heading = document.createElement("div");
+  heading.className = "giftcode-heading";
+  const eyebrow = document.createElement("div");
+  eyebrow.className = "section-kicker";
+  eyebrow.textContent = "QUÀ TẶNG";
+  const title = document.createElement("h1");
+  title.textContent = "Giftcode Aniimo";
+  const desc = document.createElement("p");
+  desc.textContent = "Tra cứu mã quà tặng, sao chép nhanh và đánh dấu những mã bạn đã nhập.";
+  heading.append(eyebrow, title, desc);
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "giftcode-toolbar";
+  const search = document.createElement("input");
+  search.id = "giftcodeSearchInput";
+  search.className = "giftcode-search";
+  search.type = "search";
+  search.placeholder = "Tìm mã hoặc phần thưởng…";
+  search.value = state.giftcodeSearch;
+  search.setAttribute("aria-label", "Tìm giftcode");
+  const count = document.createElement("span");
+  count.className = "giftcode-count";
+  toolbar.append(search, count);
+
+  const notice = document.createElement("div");
+  notice.className = "giftcode-notice";
+  notice.innerHTML = '<strong>Cách nhập:</strong> Trong game mở <b>Cài đặt → Tài khoản → Đổi mã quà tặng</b>. Mã phân biệt chữ hoa/chữ thường và có thể hết hạn hoặc giới hạn lượt nhận.';
+
+  shell.append(heading, toolbar, notice);
+  els.giftcodePanel.append(shell);
+
+  if (!state.giftcodes) {
+    const card = document.createElement("div");
+    card.className = "data-state-card";
+    const strong = document.createElement("strong");
+    strong.textContent = state.giftcodeLoadError ? "Không thể tải giftcode" : "Đang tải giftcode";
+    const p = document.createElement("p");
+    p.textContent = state.giftcodeLoadError || "Đang tải danh sách mã…";
+    card.append(strong, p);
+    shell.append(card);
+    return;
+  }
+
+  const activeCodes = state.giftcodes.codes.filter((code) => String(code?.status || "active") !== "expired");
+  const filtered = activeCodes.filter(giftcodeMatches);
+  count.textContent = `${filtered.length} / ${activeCodes.length} mã`;
+
+  const grid = document.createElement("div");
+  grid.className = "giftcode-grid";
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "giftcode-empty";
+    empty.textContent = "Không tìm thấy giftcode phù hợp.";
+    grid.append(empty);
+  } else {
+    filtered.forEach((entry) => {
+      const code = String(entry.code || "").trim();
+      if (!code) return;
+      const card = document.createElement("article");
+      card.className = "giftcode-card";
+      if (state.giftcodeRedeemed.has(code)) card.classList.add("is-redeemed");
+      const top = document.createElement("div");
+      top.className = "giftcode-card-top";
+      const badge = document.createElement("span");
+      badge.className = `giftcode-status status-${String(entry.status || "active").toLowerCase()}`;
+      badge.textContent = giftcodeStatusLabel(entry);
+      const mark = document.createElement("button");
+      mark.type = "button";
+      mark.className = "giftcode-redeemed-toggle";
+      mark.dataset.giftcodeAction = "redeemed";
+      mark.dataset.code = code;
+      mark.textContent = state.giftcodeRedeemed.has(code) ? "Đã nhập" : "Đánh dấu đã nhập";
+      top.append(badge, mark);
+
+      const codeRow = document.createElement("div");
+      codeRow.className = "giftcode-code-row";
+      const codeText = document.createElement("code");
+      codeText.textContent = code;
+      const copy = document.createElement("button");
+      copy.type = "button";
+      copy.className = "giftcode-copy-button";
+      copy.dataset.giftcodeAction = "copy";
+      copy.dataset.code = code;
+      copy.textContent = "Sao chép";
+      codeRow.append(codeText, copy);
+
+      const rewards = document.createElement("div");
+      rewards.className = "giftcode-rewards";
+      const rewardTitle = document.createElement("span");
+      rewardTitle.textContent = "Phần thưởng";
+      const rewardList = document.createElement("div");
+      rewardList.className = "giftcode-reward-list";
+      (Array.isArray(entry.rewards) ? entry.rewards : []).forEach((reward) => {
+        const chip = document.createElement("span");
+        chip.className = "giftcode-reward";
+        chip.textContent = reward;
+        rewardList.append(chip);
+      });
+      rewards.append(rewardTitle, rewardList);
+
+      const updated = document.createElement("small");
+      updated.className = "giftcode-updated";
+      updated.textContent = entry.updated_at ? `Cập nhật ${entry.updated_at}` : "";
+      card.append(top, codeRow, rewards, updated);
+      grid.append(card);
+    });
+  }
+  shell.append(grid);
+  const foot = document.createElement("div");
+  foot.className = "giftcode-footer";
+  foot.textContent = "Danh sách mã được tách thành file dữ liệu riêng để dễ cập nhật. Aniipedia chỉ hỗ trợ tra cứu, sao chép và đánh dấu đã nhập.";
+  shell.append(foot);
+}
+
+function handleGiftcodeClick(event) {
+  const action = event.target.closest("[data-giftcode-action]");
+  if (!action) return;
+  const code = String(action.dataset.code || "");
+  if (action.dataset.giftcodeAction === "copy") {
+    copyGiftcode(code, action);
+    return;
+  }
+  if (action.dataset.giftcodeAction === "redeemed") {
+    if (state.giftcodeRedeemed.has(code)) state.giftcodeRedeemed.delete(code);
+    else state.giftcodeRedeemed.add(code);
+    saveGiftcodeRedeemedState();
+    renderGiftcodes();
+  }
+}
+
 function updateWorkspaceTabs() {
   const workspaces = {
     map: { tab: els.mapWorkspaceTab, panel: els.mapWorkspace },
@@ -6352,6 +6584,7 @@ function updateWorkspaceTabs() {
     checklist: { tab: els.checklistWorkspaceTab, panel: els.checklistWorkspace },
     aniilog: { tab: els.aniilogWorkspaceTab },
     itemlog: { tab: els.itemlogWorkspaceTab },
+    giftcode: { tab: els.giftcodeWorkspaceTab },
     team: { tab: els.teamWorkspaceTab, panel: els.teamWorkspace },
   };
   Object.entries(workspaces).forEach(([view, workspace]) => {
@@ -6373,10 +6606,14 @@ function updateWorkspaceTabs() {
   els.mapSurface.hidden = fullPanelView;
   els.catalogPanel.hidden = !catalogView;
   els.teamPanel.hidden = state.sidebarView !== "team";
+  if (els.giftcodePanel) els.giftcodePanel.hidden = state.sidebarView !== "giftcode";
   els.mapPanel.classList.toggle("catalog-active", fullPanelView);
   document.body.classList.toggle("catalog-view-active", fullPanelView);
   if (catalogView) {
     renderCatalogPreview();
+  } else if (state.sidebarView === "giftcode") {
+    void ensureGiftcodeData().then(renderGiftcodes);
+    removeMobileCatalogStickyIdentity();
   } else if (state.sidebarView === "team") {
     window.AniipediaTeamBuilder?.show();
     removeMobileCatalogStickyIdentity();
@@ -6387,7 +6624,7 @@ function updateWorkspaceTabs() {
 
 function setSidebarView(view) {
   const previousView = state.sidebarView;
-  const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog", "team"].includes(view) ? view : "map";
+  const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog", "giftcode", "team"].includes(view) ? view : "map";
   state.sidebarView = nextView;
   if (nextView === "aniilog") void ensureAniilogData();
   updateWorkspaceTabs();
@@ -9180,6 +9417,18 @@ function bindEvents() {
   els.checklistWorkspaceTab?.addEventListener("click", () => setSidebarView("checklist"));
   els.aniilogWorkspaceTab?.addEventListener("click", () => setSidebarView("aniilog"));
   els.itemlogWorkspaceTab?.addEventListener("click", () => setSidebarView("itemlog"));
+  els.giftcodeWorkspaceTab?.addEventListener("click", () => setSidebarView("giftcode"));
+  els.giftcodePanel?.addEventListener("click", handleGiftcodeClick);
+  els.giftcodePanel?.addEventListener("input", (event) => {
+    if (event.target?.id !== "giftcodeSearchInput") return;
+    state.giftcodeSearch = normalizedSearch(event.target.value);
+    renderGiftcodes();
+    const input = els.giftcodePanel?.querySelector("#giftcodeSearchInput");
+    if (input) {
+      input.focus();
+      input.setSelectionRange(state.giftcodeSearch.length, state.giftcodeSearch.length);
+    }
+  });
   els.teamWorkspaceTab?.addEventListener("click", () => setSidebarView("team"));
   els.appVersion?.addEventListener("click", openChangelog);
   els.settingsButton?.addEventListener("click", openSettings);
@@ -9436,6 +9685,7 @@ async function init() {
     sidebar: els.teamSidebarContent,
     panel: els.teamPanel,
   });
+  loadGiftcodeRedeemedState();
   bindEvents();
   await loadRequestedShortShareSelection();
   const checklistRequest = fetch(CHECKLIST_URL, { cache: "no-cache" })
