@@ -8320,9 +8320,22 @@ function renderItems() {
       selectableItems.forEach((item) => setItemSelection(item.item_id, true));
       refreshVisibility();
     });
+    const tabIcon = document.createElement("span");
+    tabIcon.className = "layer-tab-icon";
+    tabIcon.setAttribute("aria-hidden", "true");
+    tabIcon.style.setProperty("--layer-color", layerColor(layer.id));
+
     const tabLabel = document.createElement("span");
+    tabLabel.className = "layer-tab-label";
     tabLabel.textContent = layer.label;
-    tab.append(tabLabel);
+
+    const tabCount = document.createElement("span");
+    tabCount.className = "layer-tab-count";
+    tabCount.textContent = String(layerItems.length);
+    tabCount.setAttribute("aria-label", `${layerItems.length} mục`);
+
+    tab.append(tabIcon, tabLabel, tabCount);
+    tab.style.setProperty("--layer-color", layerColor(layer.id));
     els.layerTabs.append(tab);
 
     const section = document.createElement("section");
