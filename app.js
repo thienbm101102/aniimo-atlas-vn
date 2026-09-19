@@ -1,9 +1,17 @@
-const DATA_URL = "./data/map_site_data.json?v=20260726-prismana-locations-v001";
-const CHECKLIST_URL = "./data/checklist_data.json?v=20260719-lumen-embers-v001";
+const DATA_URL = window.ANIIPEDIA_URL
+  ? window.ANIIPEDIA_URL("./data/map_site_data.json?v=20260726-prismana-locations-v001")
+  : "./data/map_site_data.json?v=20260726-prismana-locations-v001";
+const CHECKLIST_URL = window.ANIIPEDIA_URL
+  ? window.ANIIPEDIA_URL("./data/checklist_data.json?v=20260719-lumen-embers-v001")
+  : "./data/checklist_data.json?v=20260719-lumen-embers-v001";
 const ITEMLOG_DATA_URL =
   window.ANIIPEDIA_CONFIG?.itemDataUrl ||
-  "./data/itemlog_data.json?v=20260725-catalog-v003";
-const ANIILOG_DATA_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
+  (window.ANIIPEDIA_URL
+    ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260725-catalog-v003")
+    : "./data/itemlog_data.json?v=20260725-catalog-v003");
+const ANIILOG_DATA_URL = window.ANIIPEDIA_URL
+  ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260721-skill-behavior-v001")
+  : "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
 const APP_VERSION = "v0.5.37";
 const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
@@ -8320,22 +8328,9 @@ function renderItems() {
       selectableItems.forEach((item) => setItemSelection(item.item_id, true));
       refreshVisibility();
     });
-    const tabIcon = document.createElement("span");
-    tabIcon.className = "layer-tab-icon";
-    tabIcon.setAttribute("aria-hidden", "true");
-    tabIcon.style.setProperty("--layer-color", layerColor(layer.id));
-
     const tabLabel = document.createElement("span");
-    tabLabel.className = "layer-tab-label";
     tabLabel.textContent = layer.label;
-
-    const tabCount = document.createElement("span");
-    tabCount.className = "layer-tab-count";
-    tabCount.textContent = String(layerItems.length);
-    tabCount.setAttribute("aria-label", `${layerItems.length} mục`);
-
-    tab.append(tabIcon, tabLabel, tabCount);
-    tab.style.setProperty("--layer-color", layerColor(layer.id));
+    tab.append(tabLabel);
     els.layerTabs.append(tab);
 
     const section = document.createElement("section");
@@ -8999,7 +8994,7 @@ async function loadMapData(mapId, token) {
   updateMapMeta();
 
   try {
-    const response = await fetch(map.data_url);
+    const response = await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(map.data_url) : map.data_url);
     if (!response.ok) throw new Error(`Could not load marker data for ${map.label}`);
     const dataset = await response.json();
     state.mapDataCache.set(mapId, dataset);

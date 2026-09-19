@@ -10,9 +10,13 @@
 
   window.ANIIPEDIA_CONFIG = Object.freeze({
     shareApiUrl: "https://aniipedia-map-shares.minmax-aniipedia.workers.dev",
-    itemDataUrl: view
-      ? "./data/catalog-index-v2.json?v=20260725-catalog-v003"
-      : "./data/itemlog_data.json?v=20260725-catalog-v003",
+    itemDataUrl: window.ANIIPEDIA_URL
+      ? (view
+        ? window.ANIIPEDIA_URL("./data/catalog-index-v2.json?v=20260725-catalog-v003")
+        : window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260725-catalog-v003"))
+      : (view
+        ? "./data/catalog-index-v2.json?v=20260725-catalog-v003"
+        : "./data/itemlog_data.json?v=20260725-catalog-v003"),
     view: view ? 1 : 0,
   });
 })();

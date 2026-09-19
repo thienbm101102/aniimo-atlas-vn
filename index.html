@@ -29,6 +29,11 @@
         base.href = baseHref;
         document.head.prepend(base);
         window.ANIIPEDIA_BASE_URL = baseHref;
+        window.ANIIPEDIA_URL = (value) => {
+          const raw = String(value ?? "");
+          if (!raw || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(raw)) return raw;
+          return new URL(raw.replace(/^\/+/, ""), baseHref).href;
+        };
       })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -90,10 +95,11 @@
         <aside id="sidebar" class="sidebar" aria-label="Bảng điều khiển ngữ cảnh">
           <div class="context-head">
             <div>
-              <div class="eyebrow">KHÔNG GIAN TƯƠNG TÁC</div>
+              <div class="eyebrow">KHÔNG GIAN LÀM VIỆC</div>
               <h1 id="contextTitle">Bản đồ thế giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
+            
           </div>
 
           <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">

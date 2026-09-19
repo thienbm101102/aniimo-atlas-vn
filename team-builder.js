@@ -1,11 +1,17 @@
 (() => {
   "use strict";
 
-  const ANIILOG_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
+  const ANIILOG_URL = window.ANIIPEDIA_URL
+    ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260721-skill-behavior-v001")
+    : "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
   const ITEMLOG_URL =
     window.ANIIPEDIA_CONFIG?.itemDataUrl ||
-    "./data/itemlog_data.json?v=20260725-catalog-v003";
-  const MECHANICS_URL = "./data/team_builder_mechanics.json?v=20260727-potential-formula-v013";
+    (window.ANIIPEDIA_URL
+      ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260725-catalog-v003")
+      : "./data/itemlog_data.json?v=20260725-catalog-v003");
+  const MECHANICS_URL = window.ANIIPEDIA_URL
+    ? window.ANIIPEDIA_URL("./data/team_builder_mechanics.json?v=20260727-potential-formula-v013")
+    : "./data/team_builder_mechanics.json?v=20260727-potential-formula-v013";
   const LEGACY_STORAGE_KEY = "minmax-aniipedia:team-builder:v1";
   const LOADOUTS_STORAGE_KEY = "minmax-aniipedia:team-loadouts:v1";
   const LOADOUT_FILE_FORMAT = "aniipedia-team-loadout";
