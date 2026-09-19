@@ -519,6 +519,8 @@ const els = {
   zoomInButton: document.querySelector("#zoomInButton"),
   zoomOutButton: document.querySelector("#zoomOutButton"),
   fitButton: document.querySelector("#fitButton"),
+  mapPanUpButton: document.querySelector("#mapPanUpButton"),
+  mapPanDownButton: document.querySelector("#mapPanDownButton"),
 };
 
 function clamp(value, min, max) {
@@ -7081,6 +7083,15 @@ function fitMap() {
   applyTransform();
 }
 
+function nudgeMapPan(deltaY) {
+  if (!state.data || isCatalogView()) return;
+  const rect = els.mapViewport.getBoundingClientRect();
+  const amount = Math.max(160, Math.round(rect.height * 0.56));
+  state.panY += deltaY * amount;
+  clampPan();
+  applyTransform();
+}
+
 function zoomAt(clientX, clientY, nextScale) {
   const rect = els.mapViewport.getBoundingClientRect();
   const oldScale = state.scale;
@@ -9265,6 +9276,8 @@ function bindEvents() {
     zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, state.scale / 1.25);
   });
   els.fitButton.addEventListener("click", fitMap);
+  els.mapPanUpButton.addEventListener("click", () => nudgeMapPan(-1));
+  els.mapPanDownButton.addEventListener("click", () => nudgeMapPan(1));
   els.undergroundLayerToggle.addEventListener("click", () => {
     if (!undergroundLayerForCurrentMap()) return;
     state.undergroundLayerVisible = !state.undergroundLayerVisible;
