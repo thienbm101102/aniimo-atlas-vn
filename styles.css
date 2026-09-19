@@ -10460,3 +10460,116 @@ select:focus-visible {
     min-height: 300px;
   }
 }
+
+/* ========================================================================
+   VIEWPORT FIT — keep the map filters visible at 100% zoom.
+   Only the marker/item list scrolls; the filter panel itself stays inside
+   the available viewport on desktop.  This prevents users from having to
+   zoom the browser out just to reach the items below the layer cards.
+   ======================================================================== */
+@media (min-width: 821px) and (pointer: fine) {
+  #sidebar:has(#mapWorkspace:not([hidden])) {
+    overflow: hidden;
+  }
+
+  #mapWorkspace.sidebar-workspace {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #mapWorkspace > .workspace-intro {
+    flex: 0 0 auto;
+  }
+
+  #mapWorkspace > .map-context-panel {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  #mapWorkspace > .item-panel {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+    overflow: hidden;
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs {
+    flex: 0 0 auto;
+    min-height: 0;
+  }
+
+  #mapWorkspace .item-panel > .item-list {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none !important;
+    overflow-y: auto;
+  }
+}
+
+/* Short desktop/laptop displays: compact only the non-scrolling chrome,
+   never hide the marker list behind the viewport. */
+@media (min-width: 821px) and (max-height: 820px) and (pointer: fine) {
+  #mapWorkspace.sidebar-workspace {
+    gap: 7px;
+  }
+
+  #mapWorkspace > .workspace-intro {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  #mapWorkspace > .workspace-intro p {
+    line-height: 1.35;
+  }
+
+  #mapWorkspace > .map-context-panel {
+    padding: 9px 10px;
+  }
+
+  #mapWorkspace > .map-context-panel .map-tabs {
+    margin-bottom: 6px;
+  }
+
+  #mapWorkspace > .map-context-panel .map-tab {
+    height: 36px;
+  }
+
+  #mapWorkspace > .map-context-panel .search {
+    height: 36px;
+  }
+
+  #mapWorkspace > .map-context-panel .toolbar {
+    margin-top: 6px;
+  }
+
+  #mapWorkspace > .map-context-panel .share-pins-button {
+    min-height: 32px;
+    margin-top: 6px;
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs {
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs > .layer-tab {
+    min-height: 50px;
+    padding: 8px 9px;
+  }
+}
+
+/* Very short desktop viewports still keep a usable item list. */
+@media (min-width: 821px) and (max-height: 680px) and (pointer: fine) {
+  #mapWorkspace > .item-panel > .layer-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs > .layer-tab {
+    min-height: 44px;
+  }
+
+  #mapWorkspace > .map-context-panel .map-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
