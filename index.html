@@ -8,30 +8,37 @@
     <title>ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo</title>
     <script>
       (() => {
-        // GitHub Pages may serve a project site from /repo/ and can also
-        // receive requests without the trailing slash (/repo). Normalize
-        // the application base once so every relative data/asset URL keeps
-        // pointing inside the deployed site.
+        // Resolve one stable site root for both GitHub Pages project sites
+        // (https://owner.github.io/repository/) and root/custom-domain sites.
+        // Do not derive the base from the current route: GitHub Pages can
+        // serve index.html through 404.html while the browser remains on a
+        // deep URL, which would otherwise make data/ and assets/ point at a
+        // non-existent nested directory.
         const pathname = window.location.pathname || "/";
-        let baseHref;
+        const hostname = window.location.hostname || "";
+        let sitePath = "/";
 
         if (window.location.protocol === "file:") {
-          baseHref = new URL("./", window.location.href).href;
+          sitePath = pathname.endsWith("/")
+            ? pathname
+            : pathname.slice(0, pathname.lastIndexOf("/") + 1) || "/";
+        } else if (/(^|\.)github\.io$/i.test(hostname)) {
+          const firstSegment = pathname.split("/").filter(Boolean)[0] || "";
+          sitePath = firstSegment ? `/${firstSegment}/` : "/";
         } else if (pathname.endsWith("/")) {
-          baseHref = new URL(".", window.location.href).href;
-        } else if (/\/[^/]+\.[^/]+$/.test(pathname)) {
-          baseHref = new URL("./", window.location.href).href;
+          sitePath = pathname;
         } else {
-          baseHref = new URL(`${pathname}/`, window.location.origin).href;
+          sitePath = pathname.slice(0, pathname.lastIndexOf("/") + 1) || "/";
         }
 
+        const baseHref = new URL(sitePath, window.location.origin).href;
         const base = document.createElement("base");
         base.href = baseHref;
         document.head.prepend(base);
         window.ANIIPEDIA_BASE_URL = baseHref;
         window.ANIIPEDIA_URL = (value) => {
           const raw = String(value ?? "");
-          if (!raw || /^(?:[a-z]+:|\/\/|#|data:|blob:)/i.test(raw)) return raw;
+          if (!raw || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:|blob:)/i.test(raw)) return raw;
           return new URL(raw.replace(/^\/+/, ""), baseHref).href;
         };
       })();
@@ -39,7 +46,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=1.0.0">
+    <link rel="stylesheet" href="./styles.css?v=20260919-0648">
   </head>
   <body>
     <main id="appShell" class="app-shell">
@@ -99,7 +106,7 @@
               <h1 id="contextTitle">Bản đồ thế giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
-            
+            <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn bảng điều khiển" title="Thu gọn bảng điều khiển">‹</button>
           </div>
 
           <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">
@@ -279,10 +286,10 @@
 
     <div id="appToastRegion" class="app-toast-region" aria-live="polite" aria-atomic="true"></div>
 
-    <script defer src="./app-config.js?v=1.0.0"></script>
-    <script defer src="./localization.js?v=1.0.0"></script>
-    <script defer src="./ui-enhancements.js?v=1.0.0"></script>
-    <script defer src="./team-builder.js?v=1.0.0"></script>
-    <script defer src="./app.js?v=1.0.0"></script>
+    <script defer src="./app-config.js?v=20260919-0648"></script>
+    <script defer src="./localization.js?v=20260919-0648"></script>
+    <script defer src="./ui-enhancements.js?v=20260919-0648"></script>
+    <script defer src="./team-builder.js?v=20260919-0648"></script>
+    <script defer src="./app.js?v=20260919-0648"></script>
   </body>
 </html>

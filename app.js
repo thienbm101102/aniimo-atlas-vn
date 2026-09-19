@@ -1,18 +1,18 @@
 const DATA_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/map_site_data.json?v=20260726-prismana-locations-v001")
-  : "./data/map_site_data.json?v=20260726-prismana-locations-v001";
+  ? window.ANIIPEDIA_URL("./data/map_site_data.json?v=20260919-0648-pages-v002")
+  : "./data/map_site_data.json?v=20260919-0648-pages-v002";
 const CHECKLIST_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/checklist_data.json?v=20260719-lumen-embers-v001")
-  : "./data/checklist_data.json?v=20260719-lumen-embers-v001";
+  ? window.ANIIPEDIA_URL("./data/checklist_data.json?v=20260919-0648-pages-v002")
+  : "./data/checklist_data.json?v=20260919-0648-pages-v002";
 const ITEMLOG_DATA_URL =
   window.ANIIPEDIA_CONFIG?.itemDataUrl ||
   (window.ANIIPEDIA_URL
-    ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260725-catalog-v003")
-    : "./data/itemlog_data.json?v=20260725-catalog-v003");
+    ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260919-0648-pages-v002")
+    : "./data/itemlog_data.json?v=20260919-0648-pages-v002");
 const ANIILOG_DATA_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260721-skill-behavior-v001")
-  : "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
-const APP_VERSION = "v0.5.37";
+  ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648-pages-v002")
+  : "./data/aniilog_data.json?v=20260919-0648-pages-v002";
+const APP_VERSION = "v0.5.38";
 const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
 const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
@@ -9438,7 +9438,7 @@ async function init() {
   });
   bindEvents();
   await loadRequestedShortShareSelection();
-  const checklistRequest = fetch(CHECKLIST_URL)
+  const checklistRequest = fetch(CHECKLIST_URL, { cache: "no-cache" })
     .then(async (response) => {
       if (!response.ok) throw new Error(`Could not load ${CHECKLIST_URL}`);
       const checklist = await response.json();
@@ -9452,7 +9452,7 @@ async function init() {
       state.checklistData = null;
       state.checklistLoadError = error instanceof Error ? error.message : String(error);
     });
-  const response = await fetch(DATA_URL);
+  const response = await fetch(DATA_URL, { cache: "no-cache" });
   if (!response.ok) {
     throw new Error(`Could not load ${DATA_URL}`);
   }
@@ -9503,9 +9503,10 @@ init().catch((error) => {
   const title = document.createElement("strong");
   title.textContent = runningFromFile ? "Dữ liệu chưa thể tải" : "Không thể tải dữ liệu";
   const message = document.createElement("p");
+  const raw = error instanceof Error ? error.message : String(error || "");
   message.textContent = runningFromFile
     ? "Bạn đang mở trực tiếp bằng file://. Hãy chạy python -m http.server trong thư mục website rồi mở địa chỉ localhost."
-    : "Kiểm tra kết nối hoặc đường dẫn dữ liệu rồi thử tải lại trang.";
+    : (raw || "Kiểm tra kết nối hoặc đường dẫn dữ liệu rồi thử tải lại trang.");
   copy.append(title, message);
   card.append(icon, copy);
   els.itemList.append(card);

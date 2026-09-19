@@ -1040,7 +1040,7 @@
     registeredDisplay = new Map();
     templateMatchers = [];
     if (activeLocale !== "en") {
-      const response = await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(`./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`) : `./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`);
+      const response = await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(`./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`) : `./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`, { cache: "no-cache" });
       if (!response.ok) throw new Error(`Could not load localization for ${activeLocale}`);
       payload = await response.json();
       if (payload?.locale !== activeLocale || !payload?.texts || !payload?.display) {

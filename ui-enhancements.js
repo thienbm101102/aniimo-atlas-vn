@@ -51,7 +51,7 @@
 
   async function ensureCatalogIndex() {
     if (state.catalogIndex) return state.catalogIndex;
-    state.catalogIndexPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/catalog-index-v2.json?v=1.0.0") : "./data/catalog-index-v2.json?v=1.0.0")
+    state.catalogIndexPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/catalog-index-v2.json?v=20260919-0648") : "./data/catalog-index-v2.json?v=20260919-0648", { cache: "no-cache" })
       .then((r) => {
         if (!r.ok) throw new Error("Không thể tải chỉ mục vật phẩm.");
         return r.json();
@@ -62,7 +62,7 @@
 
   async function ensureAniilog() {
     if (state.aniilog) return state.aniilog;
-    state.aniilogPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=1.0.0") : "./data/aniilog_data.json?v=1.0.0")
+    state.aniilogPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648") : "./data/aniilog_data.json?v=20260919-0648", { cache: "no-cache" })
       .then((r) => {
         if (!r.ok) throw new Error("Không thể tải Aniilog.");
         return r.json();
