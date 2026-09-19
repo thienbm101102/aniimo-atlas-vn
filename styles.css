@@ -4287,7 +4287,6 @@ body.catalog-view-active .sidebar .detail-panel {
   min-width: 0;
   gap: 18px;
   border: 1px solid var(--line);
-  border-radius: 8px;
   background: rgba(var(--panel-rgb), 0.9);
   padding: clamp(16px, 2vw, 24px);
 }
@@ -8966,7 +8965,7 @@ select:focus-visible {
 .team-member-panel,
 .team-overview,
 .team-section {
-  border-radius: 16px !important;
+  /*border-radius: 16px !important;*/
   background: linear-gradient(180deg, rgba(21,28,37,.94), rgba(14,19,26,.94)) !important;
 }
 
@@ -10646,4 +10645,8 @@ select:focus-visible {
   width: 70%;
   height: 70%;
   display: block;
+}
+
+.catalog-panel > .catalog-heading {
+  display: none !important;
 }
