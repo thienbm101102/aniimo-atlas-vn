@@ -10718,3 +10718,72 @@ select:focus-visible {
   .map-vertical-scrollbar,
   .map-vertical-scrollbar-thumb { transition: none; }
 }
+
+/* ========================================================================
+   FILTER PANEL — FULL VERTICAL SCROLL
+   The user needs to scroll the entire filter area (layers + item list)
+   rather than having the item list trapped behind a fixed viewport.
+   ======================================================================== */
+@media (min-width: 821px) {
+  #mapWorkspace .item-panel {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: auto;
+  }
+
+  #mapWorkspace .item-panel > .panel-heading {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 8 !important;
+    padding: 4px 2px 10px !important;
+    margin: 0 0 10px !important;
+    background: var(--surface, #101821) !important;
+    box-shadow: 0 10px 18px rgba(0,0,0,.14);
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs {
+    display: grid !important;
+    flex: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* Do not create a second scrollbar inside the filter panel. */
+  #mapWorkspace .item-panel > .item-list {
+    display: flex !important;
+    flex: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 4px !important;
+  }
+
+  #mapWorkspace .item-panel::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  #mapWorkspace .item-panel::-webkit-scrollbar-track {
+    background: rgba(255,255,255,.055);
+    border-radius: 999px;
+  }
+
+  #mapWorkspace .item-panel::-webkit-scrollbar-thumb {
+    min-height: 56px;
+    background: rgba(var(--accent-rgb), .50);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+
+  #mapWorkspace .item-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(var(--accent-rgb), .76);
+    background-clip: padding-box;
+  }
+}
