@@ -11424,7 +11424,7 @@ select:focus-visible {
 }
 
 #mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="eggs"]::before {
-  background-image: url("./assets/icons/chest_gold__ui_item_GrabEgg_TreasureChest_Gold_Sprite_2572156805289223104.png") !important;
+  background-image: url("./assets/icons/560365__540301_ui_item_540301_Sprite_2220616850231947638.png") !important;
 }
 
 #mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="teleports"]::before {
@@ -11436,7 +11436,7 @@ select:focus-visible {
 }
 
 #mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="misc"]::before {
-  background-image: url("./assets/icons/misc_collectible_913152__913152_ui_item_913152_Sprite_-4229557952920887671.png") !important;
+  background-image: url("./assets/icons/misc_document_913174__913131_ui_item_913131_Sprite_8092264171837196090.png") !important;
 }
 
 @media (max-width: 560px) {
