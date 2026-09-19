@@ -51,24 +51,22 @@
 
   async function ensureCatalogIndex() {
     if (state.catalogIndex) return state.catalogIndex;
-    state.catalogIndexPromise ||= (window.AniipediaAssets?.fetchJson
-      ? window.AniipediaAssets.fetchJson("./data/catalog-index-v2.json?v=20260919-0900")
-      : fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/catalog-index-v2.json?v=20260919-0900") : "./data/catalog-index-v2.json?v=20260919-0900", { cache: "no-cache" }).then((r) => {
+    state.catalogIndexPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/catalog-index-v2.json?v=20260919-0648") : "./data/catalog-index-v2.json?v=20260919-0648", { cache: "no-cache" })
+      .then((r) => {
         if (!r.ok) throw new Error("Không thể tải chỉ mục vật phẩm.");
         return r.json();
-      }))
+      })
       .then((data) => (state.catalogIndex = data));
     return state.catalogIndexPromise;
   }
 
   async function ensureAniilog() {
     if (state.aniilog) return state.aniilog;
-    state.aniilogPromise ||= (window.AniipediaAssets?.fetchJson
-      ? window.AniipediaAssets.fetchJson("./data/aniilog_data.json?v=20260919-0900")
-      : fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0900") : "./data/aniilog_data.json?v=20260919-0900", { cache: "no-cache" }).then((r) => {
+    state.aniilogPromise ||= fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648") : "./data/aniilog_data.json?v=20260919-0648", { cache: "no-cache" })
+      .then((r) => {
         if (!r.ok) throw new Error("Không thể tải Aniilog.");
         return r.json();
-      }))
+      })
       .then((data) => (state.aniilog = data));
     return state.aniilogPromise;
   }

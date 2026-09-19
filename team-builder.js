@@ -1,19 +1,17 @@
 (() => {
   "use strict";
 
-  const ANIILOG_PATH = "./data/aniilog_data.json?v=20260919-0900";
-  const ITEMLOG_PATH = window.ANIIPEDIA_CONFIG?.view
-    ? "./data/catalog-index-v2.json?v=20260919-0900"
-    : "./data/itemlog_data.json?v=20260919-0900";
-  const MECHANICS_PATH = "./data/team_builder_mechanics.json?v=20260919-0900";
-
-  function fetchJson(path) {
-    if (window.AniipediaAssets?.fetchJson) return window.AniipediaAssets.fetchJson(path);
-    return fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(path) : path, { cache: "no-cache" }).then(async (response) => {
-      if (!response.ok) throw new Error(`Could not load ${path}`);
-      return response.json();
-    });
-  }
+  const ANIILOG_URL = window.ANIIPEDIA_URL
+    ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648-pages-v002")
+    : "./data/aniilog_data.json?v=20260919-0648-pages-v002";
+  const ITEMLOG_URL =
+    window.ANIIPEDIA_CONFIG?.itemDataUrl ||
+    (window.ANIIPEDIA_URL
+      ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260919-0648-pages-v002")
+      : "./data/itemlog_data.json?v=20260919-0648-pages-v002");
+  const MECHANICS_URL = window.ANIIPEDIA_URL
+    ? window.ANIIPEDIA_URL("./data/team_builder_mechanics.json?v=20260919-0648-pages-v002")
+    : "./data/team_builder_mechanics.json?v=20260919-0648-pages-v002";
   const LEGACY_STORAGE_KEY = "minmax-aniipedia:team-builder:v1";
   const LOADOUTS_STORAGE_KEY = "minmax-aniipedia:team-loadouts:v1";
   const LOADOUT_FILE_FORMAT = "aniipedia-team-loadout";
@@ -953,9 +951,18 @@
     if (aniilog && itemlog && mechanics) return;
     if (loadPromise) return loadPromise;
     loadPromise = Promise.all([
-      fetchJson(ANIILOG_PATH),
-      fetchJson(ITEMLOG_PATH),
-      fetchJson(MECHANICS_PATH),
+      fetch(ANIILOG_URL).then((response) => {
+        if (!response.ok) throw new Error("Could not load Aniimo data");
+        return response.json();
+      }),
+      fetch(ITEMLOG_URL).then((response) => {
+        if (!response.ok) throw new Error("Could not load item data");
+        return response.json();
+      }),
+      fetch(MECHANICS_URL).then((response) => {
+        if (!response.ok) throw new Error("Could not load reviewed skill mechanics");
+        return response.json();
+      }),
     ]).then(([aniimoPayload, itemPayload, mechanicsPayload]) => {
       if (
         !Array.isArray(aniimoPayload?.entries)
