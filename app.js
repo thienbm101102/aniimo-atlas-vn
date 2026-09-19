@@ -1,18 +1,19 @@
-const DATA_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/map_site_data.json?v=20260919-0648-pages-v002")
-  : "./data/map_site_data.json?v=20260919-0648-pages-v002";
-const CHECKLIST_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/checklist_data.json?v=20260919-0648-pages-v002")
-  : "./data/checklist_data.json?v=20260919-0648-pages-v002";
-const ITEMLOG_DATA_URL =
-  window.ANIIPEDIA_CONFIG?.itemDataUrl ||
-  (window.ANIIPEDIA_URL
-    ? window.ANIIPEDIA_URL("./data/itemlog_data.json?v=20260919-0648-pages-v002")
-    : "./data/itemlog_data.json?v=20260919-0648-pages-v002");
-const ANIILOG_DATA_URL = window.ANIIPEDIA_URL
-  ? window.ANIIPEDIA_URL("./data/aniilog_data.json?v=20260919-0648-pages-v002")
-  : "./data/aniilog_data.json?v=20260919-0648-pages-v002";
-const APP_VERSION = "v0.5.38";
+const DATA_PATH = "./data/map_site_data.json?v=20260919-0900";
+const CHECKLIST_PATH = "./data/checklist_data.json?v=20260919-0900";
+const ITEMLOG_DATA_PATH = window.ANIIPEDIA_CONFIG?.view
+  ? "./data/catalog-index-v2.json?v=20260919-0900"
+  : "./data/itemlog_data.json?v=20260919-0900";
+const ANIILOG_DATA_PATH = "./data/aniilog_data.json?v=20260919-0900";
+
+function fetchAniipediaJson(path, options = {}) {
+  if (window.AniipediaAssets?.fetchJson) return window.AniipediaAssets.fetchJson(path, options);
+  return fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(path) : path, { cache: "no-cache", ...options })
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Could not load ${path}`);
+      return response.json();
+    });
+}
+const APP_VERSION = "v0.5.39";
 const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
 const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
@@ -2213,10 +2214,8 @@ function ensureAniilogData() {
   if (state.aniilogData) return Promise.resolve(state.aniilogData);
   if (state.aniilogLoadPromise) return state.aniilogLoadPromise;
 
-  state.aniilogLoadPromise = fetch(ANIILOG_DATA_URL)
-    .then(async (response) => {
-      if (!response.ok) throw new Error(`Could not load ${ANIILOG_DATA_URL}`);
-      const payload = await response.json();
+  state.aniilogLoadPromise = fetchAniipediaJson(ANIILOG_DATA_PATH)
+    .then((payload) => {
       if (!Array.isArray(payload?.entries) || !payload?.totals) {
         throw new Error("Aniilog data has an invalid format");
       }
@@ -2246,10 +2245,8 @@ function ensureItemlogData() {
   if (state.itemlogData) return Promise.resolve(state.itemlogData);
   if (state.itemlogLoadPromise) return state.itemlogLoadPromise;
 
-  state.itemlogLoadPromise = fetch(ITEMLOG_DATA_URL)
-    .then(async (response) => {
-      if (!response.ok) throw new Error(`Could not load ${ITEMLOG_DATA_URL}`);
-      const payload = await response.json();
+  state.itemlogLoadPromise = fetchAniipediaJson(ITEMLOG_DATA_PATH)
+    .then((payload) => {
       if (!Array.isArray(payload?.entries) || !Array.isArray(payload?.categories) || !payload?.totals) {
         throw new Error("Item-log data has an invalid format");
       }
@@ -8994,9 +8991,12 @@ async function loadMapData(mapId, token) {
   updateMapMeta();
 
   try {
-    const response = await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(map.data_url) : map.data_url);
-    if (!response.ok) throw new Error(`Could not load marker data for ${map.label}`);
-    const dataset = await response.json();
+    const dataset = window.AniipediaAssets?.fetchJson
+      ? await window.AniipediaAssets.fetchJson(map.data_url)
+      : await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(map.data_url) : map.data_url).then(async (response) => {
+        if (!response.ok) throw new Error(`Could not load marker data for ${map.label}`);
+        return response.json();
+      });
     state.mapDataCache.set(mapId, dataset);
     if (token !== state.mapLoadToken || mapId !== state.activeMapId) return;
     state.loadingMapId = null;
@@ -9438,10 +9438,8 @@ async function init() {
   });
   bindEvents();
   await loadRequestedShortShareSelection();
-  const checklistRequest = fetch(CHECKLIST_URL, { cache: "no-cache" })
-    .then(async (response) => {
-      if (!response.ok) throw new Error(`Could not load ${CHECKLIST_URL}`);
-      const checklist = await response.json();
+  const checklistRequest = fetchAniipediaJson(CHECKLIST_PATH)
+    .then((checklist) => {
       if (!Array.isArray(checklist?.entries) || !Array.isArray(checklist?.categories)) {
         throw new Error("Checklist data has an invalid format");
       }
@@ -9452,11 +9450,7 @@ async function init() {
       state.checklistData = null;
       state.checklistLoadError = error instanceof Error ? error.message : String(error);
     });
-  const response = await fetch(DATA_URL, { cache: "no-cache" });
-  if (!response.ok) {
-    throw new Error(`Could not load ${DATA_URL}`);
-  }
-  const loaded = await response.json();
+  const loaded = await fetchAniipediaJson(DATA_PATH);
   if (Array.isArray(loaded.items) || Array.isArray(loaded.spawns)) {
     state.legacyDataset = {
       items: Array.isArray(loaded.items) ? loaded.items : [],

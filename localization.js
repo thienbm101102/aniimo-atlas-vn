@@ -1040,9 +1040,13 @@
     registeredDisplay = new Map();
     templateMatchers = [];
     if (activeLocale !== "en") {
-      const response = await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(`./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`) : `./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`, { cache: "no-cache" });
-      if (!response.ok) throw new Error(`Could not load localization for ${activeLocale}`);
-      payload = await response.json();
+      const localizationPath = `./data/i18n/${activeLocale}.json?v=${ASSET_VERSION}`;
+      payload = window.AniipediaAssets?.fetchJson
+        ? await window.AniipediaAssets.fetchJson(localizationPath)
+        : await fetch(window.ANIIPEDIA_URL ? window.ANIIPEDIA_URL(localizationPath) : localizationPath, { cache: "no-cache" }).then(async (response) => {
+          if (!response.ok) throw new Error(`Could not load localization for ${activeLocale}`);
+          return response.json();
+        });
       if (payload?.locale !== activeLocale || !payload?.texts || !payload?.display) {
         throw new Error(`Localization data has an invalid format for ${activeLocale}`);
       }
