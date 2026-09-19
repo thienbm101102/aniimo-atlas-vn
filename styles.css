@@ -10137,3 +10137,125 @@ select:focus-visible {
     font-size: 9px;
   }
 }
+
+/* ========================================================================
+   Filter panel width + layer card stability
+   Keep the approved visual language and data engine unchanged.
+   ======================================================================== */
+
+/* Give the context/filter rail enough room for readable layer controls. */
+@media (min-width: 1200px) {
+  .app-body {
+    grid-template-columns: minmax(560px, 620px) minmax(0, 1fr) !important;
+  }
+}
+
+@media (min-width: 821px) and (max-width: 1199px) {
+  .app-body {
+    grid-template-columns: minmax(500px, 540px) minmax(0, 1fr) !important;
+  }
+}
+
+/* The filter card itself should use every pixel available in the rail. */
+.item-panel {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.item-panel > .panel-heading {
+  min-width: 0;
+}
+
+.item-panel .filter-heading-title {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.item-panel .filter-heading-title > div:first-child {
+  min-width: 0;
+}
+
+.item-panel .filter-count {
+  flex: 0 0 auto;
+}
+
+/* Spacious, non-overlapping layer cards. */
+.item-panel .layer-tabs {
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 10px;
+  overflow: visible;
+}
+
+.item-panel .layer-tab {
+  min-width: 0;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  grid-template-areas: "dot copy";
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  text-align: left;
+  white-space: normal;
+}
+
+.item-panel .layer-tab::before {
+  grid-area: dot;
+  align-self: center;
+  justify-self: center;
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+}
+
+.item-panel .layer-tab > span:first-child {
+  grid-area: copy;
+  min-width: 0;
+  max-width: none;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+/* Long filter lists scroll inside the panel; the rest of the page stays put. */
+.item-panel .item-list {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: visible;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
+}
+
+@media (min-width: 1200px) {
+  .item-panel .layer-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .item-panel {
+    width: 100%;
+  }
+
+  .item-panel .layer-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .item-panel .layer-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .item-panel .layer-tab {
+    min-height: 58px;
+  }
+}
