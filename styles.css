@@ -10640,7 +10640,3 @@ select:focus-visible {
     overflow-y: auto !important;
   }
 }
-
-.catalog-panel > .catalog-heading {
-  display: none !important;
-}
