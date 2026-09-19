@@ -1,13 +1,13 @@
 (() => {
   "use strict";
 
-  const ASSET_VERSION = "20260918-localization-v1";
+  const ASSET_VERSION = "20260722-localization-v028";
   const SUPPORTED_LANGUAGES = Object.freeze({
     en: { label: "English", htmlLang: "en" },
+    vi: { label: "Tiếng Việt", htmlLang: "vi" },
     "zh-CN": { label: "简体中文", htmlLang: "zh-CN" },
     ja: { label: "日本語", htmlLang: "ja" },
     ko: { label: "한국어", htmlLang: "ko" },
-    vi: { label: "Tiếng Việt", htmlLang: "vi" },
   });
 
   // Website-owned interface copy. Game-owned names and descriptions come from
@@ -471,12 +471,235 @@
   );
 
   const UI_TRANSLATIONS = Object.fromEntries(Object.keys(SUPPORTED_LANGUAGES).map((locale) => [locale, new Map()]));
+
+  // Website copy for the Vietnamese-first experience. Game-owned names stay
+  // intact unless an explicit UI label exists here. The fallback token pass
+  // below catches newly added English interface copy without touching IDs.
+  const VI_UI = new Map(Object.entries({
+    "Floating (draggable)": "Nổi (có thể kéo)",
+    "Share current pins": "Chia sẻ vị trí",
+    "Team": "Đội hình",
+    "Team Builder": "Xây dựng đội hình",
+    "Standard": "Tiêu chuẩn",
+    "Co-op": "Phối hợp",
+    "Clear": "Xóa",
+    "Clear this saved team?": "Xóa đội hình đã lưu này?",
+    "Team overview": "Tổng quan đội hình",
+    "Team slot": "Vị trí đội",
+    "Main Aniimo": "Aniimo chính",
+    "Core skill ally": "Đồng đội kỹ năng Core",
+    "Empty slot": "Vị trí trống",
+    "Choose an Aniimo": "Chọn Aniimo",
+    "Choose an Aniimo below": "Chọn Aniimo bên dưới",
+    "Select a team member": "Chọn thành viên đội",
+    "Skill loadout": "Bộ kỹ năng",
+    "Active skill": "Kỹ năng chủ động",
+    "Choose a skill": "Chọn kỹ năng",
+    "Switch-skill (Core)": "Kỹ năng chuyển đổi (Core)",
+    "Switch-skill": "Kỹ năng chuyển đổi",
+    "No switch-skill": "Không có kỹ năng chuyển đổi",
+    "No Core skill available": "Không có kỹ năng Core",
+    "Core skill": "Kỹ năng Core",
+    "Co-op Core access": "Quyền truy cập Core phối hợp",
+    "Active": "Chủ động",
+    "Passive": "Bị động",
+    "Carried item & runes": "Trang bị mang theo & rune",
+    "Carried item": "Trang bị mang theo",
+    "No carried item": "Không có trang bị mang theo",
+    "No rune": "Không có rune",
+    "Main stat": "Chỉ số chính",
+    "Secondary roll": "Thuộc tính phụ",
+    "No secondary roll": "Không có thuộc tính phụ",
+    "Minimum": "Tối thiểu",
+    "Perfect": "Hoàn hảo",
+    "Confirmed build stats": "Chỉ số build đã xác nhận",
+    "Projected build stats": "Chỉ số build dự kiến",
+    "Aniimo level": "Cấp Aniimo",
+    "Level scaling": "Tăng trưởng theo cấp",
+    "Base value": "Giá trị cơ bản",
+    "Tier": "Bậc",
+    "Tier bonuses": "Thưởng bậc",
+    "Training level": "Cấp huấn luyện",
+    "Team synergy scenario": "Tình huống cộng hưởng đội hình",
+    "Sample damage": "Sát thương mẫu",
+    "Combat profile ready": "Hồ sơ chiến đấu sẵn sàng",
+    "Choose an Aniimo for this slot": "Chọn Aniimo cho vị trí này",
+    "Loading Team Builder…": "Đang tải Xây dựng đội hình…",
+    "Resonance Training": "Huấn luyện cộng hưởng",
+    "Advanced": "Nâng cao",
+    "Slot": "Vị trí",
+    "Selected item": "Vật phẩm đã chọn",
+    "Selected Aniimo": "Aniimo đã chọn",
+    "Pack contents": "Nội dung gói",
+    "Known contents": "Nội dung đã biết",
+    "Shop listings": "Sản phẩm trong cửa hàng",
+    "Item Shop": "Cửa hàng vật phẩm",
+    "Receives": "Nhận được",
+    "Configured purchase limit": "Giới hạn mua đã cấu hình",
+    "Crafting & production": "Chế tạo & sản xuất",
+    "Produces": "Tạo ra",
+    "Requires": "Cần",
+    "Progression uses": "Công dụng trong tiến trình",
+    "Aniimo progression": "Tiến trình Aniimo",
+    "Show Aniimo": "Xem Aniimo",
+    "Item crafting": "Chế tạo vật phẩm",
+    "Homeland production": "Sản xuất tại quê nhà",
+    "Locations & Services": "Địa điểm & dịch vụ",
+    "Other": "Khác",
+    "Series": "Dòng",
+    "Challenges": "Thử thách",
+    "Activities": "Hoạt động",
+    "Entrances": "Lối vào",
+    "Other": "Khác",
+    "Settings": "Cài đặt",
+    "Settings sections": "Nhóm cài đặt",
+    "General Settings": "Cài đặt chung",
+    "Themes": "Giao diện",
+    "Map selection details": "Chi tiết marker bản đồ",
+    "Desktop position": "Vị trí trên desktop",
+    "Top left": "Trên trái",
+    "Top right (recommended)": "Trên phải (khuyến nghị)",
+    "Bottom left": "Dưới trái",
+    "Bottom right": "Dưới phải",
+    "Sidebar": "Thanh bên",
+    "Desktop default state": "Trạng thái mặc định desktop",
+    "Expanded": "Mở rộng",
+    "Minimized": "Thu gọn",
+    "Filter shortcuts": "Phím tắt bộ lọc",
+    "Map shortcuts": "Phím tắt bản đồ",
+    "Copy pin link": "Sao chép liên kết pin",
+    "Copy a link to the selected pins": "Sao chép liên kết đến các pin đã chọn",
+    "Select at least one pin to create a link": "Chọn ít nhất một pin để tạo liên kết",
+    "Select at least one pin": "Chọn ít nhất một pin",
+    "Pin link copied": "Đã sao chép liên kết pin",
+    "Could not copy pin link": "Không thể sao chép liên kết pin",
+    "Too many pins for one link": "Quá nhiều pin cho một liên kết",
+    "Website theme": "Giao diện website",
+    "Language": "Ngôn ngữ",
+    "Display language": "Ngôn ngữ hiển thị",
+    "Game data and website interface": "Dữ liệu game và giao diện website",
+    "Aniimo index": "Danh mục Aniimo",
+    "Primary action": "Hành động chính",
+    "Hover state": "Trạng thái hover",
+    "Custom colors": "Màu tùy chỉnh",
+    "Live preview": "Xem trước trực tiếp",
+    "Apply theme": "Áp dụng giao diện",
+    "Theme applied": "Đã áp dụng giao diện",
+    "Reset preview": "Đặt lại xem trước",
+    "Page background": "Nền trang",
+    "Background glow": "Quầng sáng nền",
+    "Surface": "Bề mặt",
+    "Raised surface": "Bề mặt nổi",
+    "Borders": "Viền",
+    "Primary text": "Chữ chính",
+    "Muted text": "Chữ phụ",
+    "Primary accent": "Màu nhấn chính",
+    "Ignited accent": "Màu nhấn phụ",
+    "Highlight": "Điểm nhấn",
+    "Search": "Tìm kiếm",
+    "Filter": "Bộ lọc",
+    "Markers": "Marker",
+    "markers": "marker",
+    "marker": "marker",
+    "items": "vật phẩm",
+    "Item": "Vật phẩm",
+    "items": "vật phẩm",
+    "Aniimo": "Aniimo",
+    "forms": "hình thái",
+    "eggs": "trứng",
+    "Eggs": "Trứng",
+    "teleports": "điểm dịch chuyển",
+    "Teleport": "Dịch chuyển",
+    "Lumens": "Lumen",
+    "misc": "khác",
+    "locations": "địa điểm",
+    "spawns": "điểm xuất hiện",
+    "habitats": "khu sinh sống",
+    "All": "Tất cả",
+    "Reset": "Đặt lại",
+    "Map": "Bản đồ",
+    "Maps": "Các bản đồ",
+    "Tracking": "Theo dõi",
+    "Checklist": "Checklist",
+    "Item-log": "Kho vật phẩm",
+    "Aniilog": "Aniilog",
+    "Locate": "Định vị",
+    "Respawn": "Hồi sinh",
+    "Selection": "Đang chọn",
+    "No marker selected": "Chưa chọn marker",
+    "No catalogue records are available": "Không có dữ liệu bách khoa",
+    "Loading": "Đang tải",
+    "Unavailable": "Không khả dụng",
+    "Source": "Nguồn",
+    "Category": "Danh mục",
+    "Type": "Loại",
+    "Class": "Hệ",
+    "Form": "Hình thái",
+    "Quality": "Phẩm chất",
+    "Description": "Mô tả",
+    "Requirements": "Điều kiện",
+    "Evolution": "Tiến hóa",
+    "Research": "Nghiên cứu",
+    "Skills": "Kỹ năng",
+    "Locations": "Địa điểm",
+    "Known maps": "Bản đồ đã biết",
+    "Requirements": "Điều kiện",
+    "Boss variant": "Biến thể Boss",
+    "Possible reward": "Phần thưởng có thể nhận",
+    "Repeatable drops": "Phần thưởng lặp lại",
+    "How to obtain": "Cách nhận",
+    "Item filter": "Bộ lọc vật phẩm",
+    "Featured filters": "Bộ lọc nổi bật",
+    "All filters": "Tất cả bộ lọc",
+    "Nurture": "Nuôi dưỡng",
+    "Research topic": "Chủ đề nghiên cứu",
+    "Research level rewards": "Phần thưởng cấp nghiên cứu",
+    "Accessory slot": "Ô phụ kiện",
+    "Unlock": "Mở khóa",
+    "Unavailable": "Không khả dụng",
+    "Can evolve to": "Có thể tiến hóa thành",
+    "Evolved from": "Tiến hóa từ",
+    "Sells for": "Bán được",
+    "Open in Aniilog": "Mở trong Aniilog",
+    "Open in Item-log": "Mở trong Kho vật phẩm",
+    "View on map": "Xem trên bản đồ",
+    "Close": "Đóng",
+    "Cancel": "Hủy",
+    "Save": "Lưu",
+    "Apply": "Áp dụng",
+    "Delete": "Xóa",
+  }));
+
+  const VI_WORDS = new Map(Object.entries({
+    "Search": "Tìm kiếm", "Filter": "Bộ lọc", "Settings": "Cài đặt", "Map": "Bản đồ",
+    "Tracking": "Theo dõi", "Checklist": "Checklist", "Team": "Đội hình", "Builder": "Xây dựng",
+    "Item": "Vật phẩm", "Items": "Vật phẩm", "Location": "Địa điểm", "Locations": "Địa điểm",
+    "Skills": "Kỹ năng", "Skill": "Kỹ năng", "Class": "Hệ", "Element": "Nguyên tố",
+    "Form": "Hình thái", "Stage": "Giai đoạn", "Base": "Cơ bản", "Stats": "Chỉ số",
+    "Ability": "Năng lực", "Core": "Core", "Ultimate": "Tối thượng", "Trait": "Đặc tính",
+    "Mobility": "Di chuyển", "Exploration": "Khám phá", "Homeland": "Quê nhà", "Research": "Nghiên cứu",
+    "Evolution": "Tiến hóa", "Progression": "Tiến trình", "Location": "Địa điểm", "Source": "Nguồn",
+    "Quality": "Phẩm chất", "Category": "Danh mục", "Type": "Loại", "Description": "Mô tả",
+    "Requirements": "Điều kiện", "Level": "Cấp", "Damage": "Sát thương", "Attack": "Tấn công",
+    "Defense": "Phòng thủ", "Magic": "Phép", "Regen": "Hồi phục", "High": "Cao", "Low": "Thấp",
+    "Loading": "Đang tải", "No": "Không", "Available": "Khả dụng", "Unavailable": "Không khả dụng",
+    "Select": "Chọn", "Choose": "Chọn", "Clear": "Xóa", "Reset": "Đặt lại", "Open": "Mở",
+    "Close": "Đóng", "Share": "Chia sẻ", "Copied": "Đã sao chép", "Created": "Đã tạo",
+    "Saved": "Đã lưu", "Ready": "Sẵn sàng", "All": "Tất cả", "Any": "Bất kỳ", "None": "Không có",
+    "Standard": "Tiêu chuẩn", "Special": "Đặc biệt", "Basic": "Cơ bản", "Advanced": "Nâng cao",
+    "Main": "Chính", "Secondary": "Phụ", "Minimum": "Tối thiểu", "Perfect": "Hoàn hảo",
+    "Unknown": "Chưa rõ", "Total": "Tổng", "Count": "Số lượng", "Time": "Thời gian",
+    "Ready": "Sẵn sàng", "Preview": "Xem trước", "Theme": "Giao diện", "Language": "Ngôn ngữ",
+    "Current": "Hiện tại", "Selected": "Đã chọn", "Required": "Bắt buộc", "Optional": "Tùy chọn",
+  }));
+
   UI_ROWS.forEach(([english, chinese, japanese, korean]) => {
     UI_TRANSLATIONS.en.set(english, english);
     UI_TRANSLATIONS["zh-CN"].set(english, chinese);
     UI_TRANSLATIONS.ja.set(english, japanese);
     UI_TRANSLATIONS.ko.set(english, korean);
   });
+  VI_UI.forEach((target, source) => UI_TRANSLATIONS.vi.set(source, target));
 
   let activeLocale = "en";
   let payload = null;
@@ -567,28 +790,24 @@
     }
     const choice = text.match(/^Choice ([\d,]+)$/);
     if (choice) {
-      if (activeLocale === "vi") return `Lựa chọn ${choice[1]}`;
       if (activeLocale === "zh-CN") return `选项 ${choice[1]}`;
       if (activeLocale === "ja") return `選択肢 ${choice[1]}`;
       if (activeLocale === "ko") return `선택 ${choice[1]}`;
     }
     const receivesItems = text.match(/^Receives ([\d,]+) items?$/);
     if (receivesItems) {
-      if (activeLocale === "vi") return `Nhận ${receivesItems[1]} vật phẩm`;
       if (activeLocale === "zh-CN") return `获得 ${receivesItems[1]} 件道具`;
       if (activeLocale === "ja") return `${receivesItems[1]} 個のアイテムを獲得`;
       if (activeLocale === "ko") return `아이템 ${receivesItems[1]}개 획득`;
     }
     const purchaseLimit = text.match(/^Configured purchase limit: ([\d,]+)$/);
     if (purchaseLimit) {
-      if (activeLocale === "vi") return `Giới hạn mua: ${purchaseLimit[1]}`;
       if (activeLocale === "zh-CN") return `购买上限：${purchaseLimit[1]}`;
       if (activeLocale === "ja") return `購入上限：${purchaseLimit[1]}`;
       if (activeLocale === "ko") return `구매 제한: ${purchaseLimit[1]}`;
     }
     const usedInRecipes = text.match(/^Used in ([\d,]+) recipes?$/);
     if (usedInRecipes) {
-      if (activeLocale === "vi") return `Dùng trong ${usedInRecipes[1]} công thức`;
       if (activeLocale === "zh-CN") return `用于 ${usedInRecipes[1]} 个配方`;
       if (activeLocale === "ja") return `${usedInRecipes[1]} 件のレシピで使用`;
       if (activeLocale === "ko") return `레시피 ${usedInRecipes[1]}개에 사용`;
@@ -620,25 +839,7 @@
       const labels = unlock[1].split(" and ").map((label) => translate(label));
       return `${UI_TRANSLATIONS[activeLocale].get("Unlock by obtaining")} ${labels.join(` ${conjunction} `)}`;
     }
-    const respawn = text.match(/^Respawns in (.+)$/);
-    if (respawn && activeLocale === "vi") return `Hồi sinh sau ${respawn[1]}`;
-    const mapsSummary = text.match(/^(\d+) maps? - (.+)$/);
-    if (mapsSummary && activeLocale === "vi") return `${mapsSummary[1]} bản đồ · ${mapsSummary[2]}`;
     const patterns = {
-      "vi": [
-        [/^(\d+) tracked$/, "$1 đang theo dõi"],
-        [/^(\d+) markers$/, "$1 điểm ghim"],
-        [/^(\d+) locations$/, "$1 địa điểm"],
-        [/^(\d+) documents?$/, "$1 tài liệu"],
-        [/^(\d+) items$/, "$1 vật phẩm"],
-        [/^(\d+) eggs$/, "$1 trứng"],
-        [/^(\d+) teleports$/, "$1 điểm dịch chuyển"],
-        [/^(\d+) misc$/, "$1 mục khác"],
-        [/^Tier (\d+)$/, "Bậc $1"],
-        [/^Level (\d+)$/, "Cấp $1"],
-        [/^(\d+) research topics$/, "$1 chủ đề nghiên cứu"],
-        [/^(\d+) total research points$/, "Tổng $1 điểm nghiên cứu"],
-      ],
       "zh-CN": [
         [/^(\d+) tracked$/, "$1 个已追踪"],
         [/^(\d+) markers$/, "$1 个标记"],
@@ -699,7 +900,6 @@
     }
     if (/\d+ markers.*\d+ items/.test(text)) {
       const countTerms = {
-        vi: [["markers", " điểm ghim"], ["items", " vật phẩm"], ["eggs", " trứng"], ["teleports", " điểm dịch chuyển"], ["Lumens", " Lumens"], ["misc", " mục khác"]],
         "zh-CN": [["markers", "个标记"], ["items", "件道具"], ["eggs", "个蛋"], ["teleports", "个传送点"], ["Lumens", "个流明"], ["misc", "个其他"]],
         ja: [["markers", "マーカー"], ["items", "アイテム"], ["eggs", "個のタマゴ"], ["teleports", "テレポート"], ["Lumens", "ルーメン"], ["misc", "その他"]],
         ko: [["markers", "개 마커"], ["items", "개 아이템"], ["eggs", "개 알"], ["teleports", "개 순간이동"], ["Lumens", "개 루멘"], ["misc", "개 기타"]],
@@ -709,13 +909,11 @@
         text,
       );
       const aniimoCountTerms = {
-        vi: " Aniimo",
         "zh-CN": "个伊莫",
         ja: "体のアニモ",
         ko: "개 애니모",
       };
       const aniimoFormsCountTerms = {
-        vi: " dạng Aniimo",
         "zh-CN": "\u4e2a\u4f0a\u83ab\u5f62\u6001",
         ja: "\u4f53\u306e\u30a2\u30cb\u30e2\u5f62\u614b",
         ko: "\uac1c \uc560\ub2c8\ubaa8 \ud615\ud0dc",
@@ -742,12 +940,30 @@
     return text;
   }
 
+  function translateVietnameseFallback(source) {
+    if (!source || activeLocale !== "vi") return source;
+    const normalized = source.trim();
+    if (VI_UI.has(normalized)) return VI_UI.get(normalized);
+    const parts = normalized.split(/(\s+|[/:·—–().,!?+])/g);
+    let changed = false;
+    const translated = parts.map((part) => {
+      const clean = part.trim();
+      if (!clean || /[/:·—–().,!?+]/.test(part)) return part;
+      if (VI_WORDS.has(clean)) {
+        changed = true;
+        return VI_WORDS.get(clean);
+      }
+      return part;
+    }).join("");
+    return changed ? translated : source;
+  }
+
   function translate(value) {
     const source = String(value ?? "");
     if (activeLocale === "en" || !source) return source;
-    const direct = registeredDisplay.get(source)
-      || UI_TRANSLATIONS[activeLocale].get(source)
-      || payload?.display?.[source];
+    const direct = activeLocale === "vi"
+      ? (registeredDisplay.get(source) || VI_UI.get(source) || UI_TRANSLATIONS[activeLocale].get(source) || payload?.display?.[source])
+      : (registeredDisplay.get(source) || UI_TRANSLATIONS[activeLocale].get(source) || payload?.display?.[source]);
     if (direct) return direct;
     const punctuated = source.match(/^(.*?)([.!?])$/);
     if (punctuated) {
@@ -767,7 +983,8 @@
       const right = translate(composite[2]);
       if (left !== composite[1] || right !== composite[2]) return `${left}: ${right}`;
     }
-    return translatePattern(source);
+    const patterned = translatePattern(source);
+    return activeLocale === "vi" ? translateVietnameseFallback(patterned) : patterned;
   }
 
   function translateUid(uid, fallback = "") {
@@ -829,9 +1046,6 @@
       if (payload?.locale !== activeLocale || !payload?.texts || !payload?.display) {
         throw new Error(`Localization data has an invalid format for ${activeLocale}`);
       }
-      Object.entries(payload.display || {}).forEach(([source, target]) => {
-        if (source && target && !UI_TRANSLATIONS[activeLocale].has(source)) UI_TRANSLATIONS[activeLocale].set(source, target);
-      });
       templateMatchers = compileTemplateMatchers(payload.templates);
     }
     window.__aniipediaI18nDiagnostics = {

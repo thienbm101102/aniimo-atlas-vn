@@ -4,7 +4,7 @@ const ITEMLOG_DATA_URL =
   window.ANIIPEDIA_CONFIG?.itemDataUrl ||
   "./data/itemlog_data.json?v=20260725-catalog-v003";
 const ANIILOG_DATA_URL = "./data/aniilog_data.json?v=20260721-skill-behavior-v001";
-const APP_VERSION = "v0.5.42";
+const APP_VERSION = "v0.5.37";
 const GITHUB_COMMITS_URL = "https://api.github.com/repos/donneeee/MinMax-Aniipedia/commits?sha=main&per_page=30";
 const CHANGELOG_INTERNAL_MARKER_RE = /\[(?:skip changelog|internal)\]/i;
 const CHANGELOG_PUBLIC_ENTRY_LIMIT = 12;
@@ -362,7 +362,7 @@ const state = {
   desktopSelectionMinimized: false,
   desktopSelectionDrag: null,
   sidebarCollapsed: false,
-  sidebarView: "map",
+  sidebarView: REQUESTED_TEAM_SHARE_ID ? "team" : "map",
   settingsOpen: false,
   settingsFocusReturn: null,
   settingsThemeDraft: null,
@@ -487,6 +487,7 @@ const els = {
   mobileSelectionCloseButton: document.querySelector("#mobileSelectionCloseButton"),
   mapPanel: document.querySelector(".map-panel"),
   mapSurface: document.querySelector("#mapSurface"),
+  appStartupNotice: document.querySelector("#appStartupNotice"),
   catalogPanel: document.querySelector("#catalogPanel"),
   teamPanel: document.querySelector("#teamPanel"),
   mapViewport: document.querySelector("#mapViewport"),
@@ -1323,7 +1324,9 @@ function loadLocalTracking() {
     state.preferences = {
       ...defaultPreferences(),
       showMagicAttack: Boolean(preferences?.showMagicAttack),
-      language: window.AniipediaI18n.normalizeLocale(preferences?.language),
+      language: preferences && Object.hasOwn(preferences, "language")
+        ? window.AniipediaI18n.normalizeLocale(preferences.language)
+        : "vi",
       theme: normalizeThemeId(preferences?.theme),
       mapSelectionPlacement: normalizeDesktopSelectionPlacement(preferences?.mapSelectionPlacement),
       mapSelectionDefaultState: normalizeSelectionDefaultState(preferences?.mapSelectionDefaultState),
@@ -2193,7 +2196,7 @@ function isCatalogView(view = state.sidebarView) {
 }
 
 function isFullPanelView(view = state.sidebarView) {
-  return isCatalogView(view);
+  return isCatalogView(view) || view === "team";
 }
 
 const ANIILOG_CLASS_ORDER = Object.freeze(["DPS", "REGEN", "BREAK", "HEALER", "SUPPORT"]);
@@ -6361,11 +6364,14 @@ function updateWorkspaceTabs() {
   const fullPanelView = isFullPanelView();
   els.mapSurface.hidden = fullPanelView;
   els.catalogPanel.hidden = !catalogView;
-  els.teamPanel.hidden = true;
+  els.teamPanel.hidden = state.sidebarView !== "team";
   els.mapPanel.classList.toggle("catalog-active", fullPanelView);
   document.body.classList.toggle("catalog-view-active", fullPanelView);
   if (catalogView) {
     renderCatalogPreview();
+  } else if (state.sidebarView === "team") {
+    window.AniipediaTeamBuilder?.show();
+    removeMobileCatalogStickyIdentity();
   } else {
     removeMobileCatalogStickyIdentity();
   }
@@ -6373,7 +6379,7 @@ function updateWorkspaceTabs() {
 
 function setSidebarView(view) {
   const previousView = state.sidebarView;
-  const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog"].includes(view) ? view : "map";
+  const nextView = ["map", "tracking", "checklist", "aniilog", "itemlog", "team"].includes(view) ? view : "map";
   state.sidebarView = nextView;
   if (nextView === "aniilog") void ensureAniilogData();
   updateWorkspaceTabs();
@@ -8993,6 +8999,8 @@ async function loadMapData(mapId, token) {
     state.mapLoadError = error;
     updateMapMeta();
     clearSelectionDetails("The map loaded, but its marker data could not be loaded.");
+    els.desktopSelectionPanel.hidden = true;
+    els.mobileSelectionPanel.hidden = true;
     console.error(error);
   }
 }
@@ -9177,7 +9185,7 @@ function bindEvents() {
   });
   els.workspaceTabs.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
-    const tabs = [...els.workspaceTabs.querySelectorAll(".workspace-tab")].filter((tab) => tab.dataset.workspaceView !== "team");
+    const tabs = [...els.workspaceTabs.querySelectorAll(".workspace-tab")];
     const currentIndex = Math.max(0, tabs.findIndex((tab) => tab.dataset.workspaceView === state.sidebarView));
     let nextIndex = currentIndex;
     if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
@@ -9371,6 +9379,39 @@ function bindEvents() {
   }
 }
 
+function showStartupNotice(error) {
+  const notice = els.appStartupNotice;
+  if (!notice) return;
+  const runningFromFile = window.location.protocol === "file:";
+  notice.replaceChildren();
+
+  const icon = document.createElement("div");
+  icon.className = "app-startup-notice-icon";
+  icon.textContent = runningFromFile ? "!" : "×";
+
+  const content = document.createElement("div");
+  content.className = "app-startup-notice-content";
+
+  const title = document.createElement("strong");
+  title.textContent = runningFromFile ? "Hãy mở website qua máy chủ cục bộ" : "Không thể tải dữ liệu Aniipedia";
+
+  const message = document.createElement("p");
+  message.textContent = runningFromFile
+    ? "Bạn đang mở index.html trực tiếp bằng file://. Hãy chạy python -m http.server trong thư mục website rồi mở địa chỉ localhost để tải đầy đủ dữ liệu."
+    : "Một hoặc nhiều tệp dữ liệu không thể tải. Kiểm tra kết nối và thử tải lại trang.";
+
+  content.append(title, message);
+
+  const detail = document.createElement("small");
+  const raw = error instanceof Error ? error.message : String(error || "");
+  detail.textContent = raw && !runningFromFile ? `Chi tiết: ${raw}` : "";
+  detail.hidden = !detail.textContent;
+  content.append(detail);
+
+  notice.append(icon, content);
+  notice.hidden = false;
+}
+
 async function init() {
   loadLocalTracking();
   applyThemePreference();
@@ -9383,6 +9424,10 @@ async function init() {
     await window.AniipediaI18n.load("en");
   }
   window.AniipediaI18n.start();
+  window.AniipediaTeamBuilder?.mount({
+    sidebar: els.teamSidebarContent,
+    panel: els.teamPanel,
+  });
   bindEvents();
   await loadRequestedShortShareSelection();
   const checklistRequest = fetch(CHECKLIST_URL)
@@ -9433,7 +9478,33 @@ async function init() {
 }
 
 init().catch((error) => {
-  els.mapMeta.textContent = "Load failed";
-  clearSelectionDetails(error.message);
+  const runningFromFile = window.location.protocol === "file:";
+  els.mapMeta.textContent = runningFromFile ? "Cần mở qua máy chủ cục bộ" : "Dữ liệu chưa sẵn sàng";
+  els.filterCount.textContent = "—";
+  els.desktopSelectionPanel.hidden = true;
+  els.mobileSelectionPanel.hidden = true;
+  els.layerTabs.replaceChildren();
+  els.itemList.replaceChildren();
+
+  const card = document.createElement("div");
+  card.className = "data-state-card is-error";
+  const icon = document.createElement("div");
+  icon.className = "data-state-icon";
+  icon.textContent = runningFromFile ? "!" : "×";
+  const copy = document.createElement("div");
+  const title = document.createElement("strong");
+  title.textContent = runningFromFile ? "Dữ liệu chưa thể tải" : "Không thể tải dữ liệu";
+  const message = document.createElement("p");
+  message.textContent = runningFromFile
+    ? "Bạn đang mở trực tiếp bằng file://. Hãy chạy python -m http.server trong thư mục website rồi mở địa chỉ localhost."
+    : "Kiểm tra kết nối hoặc đường dẫn dữ liệu rồi thử tải lại trang.";
+  copy.append(title, message);
+  card.append(icon, copy);
+  els.itemList.append(card);
+
+  if (els.appStartupNotice) showStartupNotice(error);
+  if (window.AniipediaUI?.showToast) {
+    window.AniipediaUI.showToast(runningFromFile ? "Hãy mở website qua máy chủ cục bộ." : "Không thể tải dữ liệu Aniipedia.", "error");
+  }
   console.error(error);
 });

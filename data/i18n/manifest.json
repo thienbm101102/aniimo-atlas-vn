@@ -37,6 +37,15 @@
       "missing_english_uid_count": 0,
       "ambiguous_display_sources": 771,
       "ambiguous_template_sources": 7
+    },
+    "vi": {
+      "file": "vi.json",
+      "uid_count": 92954,
+      "display_count": 0,
+      "template_count": 0,
+      "missing_english_uid_count": 0,
+      "ambiguous_display_sources": 0,
+      "ambiguous_template_sources": 0
     }
   }
 }
