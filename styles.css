@@ -11383,3 +11383,75 @@ select:focus-visible {
     grid-template-columns: minmax(410px, 440px) minmax(0, 1fr) !important;
   }
 }
+
+/* ========================================================================
+   LAYER ICONS — replace the colored dots with existing Aniimo asset icons.
+   UI/data logic is untouched; this is presentation-only.
+   ======================================================================== */
+@media (min-width: 561px) {
+  #mapWorkspace .item-panel > .layer-tabs > .layer-tab {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    min-height: 68px !important;
+    padding: 10px 12px !important;
+  }
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab::before {
+  content: "" !important;
+  grid-area: dot !important;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  min-height: 30px !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  box-shadow: none !important;
+  justify-self: center !important;
+  align-self: center !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="items"]::before {
+  background-image: url("./assets/icons/540002__ui_item_540002__Sprite_-8053265606696201839.png") !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="aniimo"]::before {
+  background-image: url("./assets/icons/aniimo_10051_blessed__10051_Emberpup_UI_PetHead_10051_Sprite_1694520572941008294.png") !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="eggs"]::before {
+  background-image: url("./assets/icons/chest_gold__ui_item_GrabEgg_TreasureChest_Gold_Sprite_2572156805289223104.png") !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="teleports"]::before {
+  background-image: url("./assets/icons/teleport_bloom__UI_Icon_MarkPoint_Transmit_Sprite_-3567600434714865659.png") !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="ambers"]::before {
+  background-image: url("./assets/icons/amber_lumin__UI_Icon_MarkPoint_MythicalAnimals_Sprite_2528846401555149030.png") !important;
+}
+
+#mapWorkspace .item-panel > .layer-tabs > .layer-tab[data-layer-id="misc"]::before {
+  background-image: url("./assets/icons/misc_collectible_913152__913152_ui_item_913152_Sprite_-4229557952920887671.png") !important;
+}
+
+@media (max-width: 560px) {
+  #mapWorkspace .item-panel > .layer-tabs > .layer-tab {
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    min-height: 60px !important;
+    padding: 9px 10px !important;
+  }
+
+  #mapWorkspace .item-panel > .layer-tabs > .layer-tab::before {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    border-radius: 7px !important;
+  }
+}
