@@ -31,16 +31,29 @@
           sitePath = pathname.slice(0, pathname.lastIndexOf("/") + 1) || "/";
         }
 
-        const baseHref = new URL(sitePath, window.location.origin).href;
-        const base = document.createElement("base");
-        base.href = baseHref;
-        document.head.prepend(base);
-        window.ANIIPEDIA_BASE_URL = baseHref;
-        window.ANIIPEDIA_URL = (value) => {
-          const raw = String(value ?? "");
-          if (!raw || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:|blob:)/i.test(raw)) return raw;
-          return new URL(raw.replace(/^\/+/, ""), baseHref).href;
-        };
+        const baseHref =
+  window.location.protocol === "file:"
+    ? new URL("./", window.location.href).href
+    : new URL(sitePath, window.location.origin).href;
+
+const base = document.createElement("base");
+base.href = baseHref;
+document.head.prepend(base);
+
+window.ANIIPEDIA_BASE_URL = baseHref;
+
+window.ANIIPEDIA_URL = (value) => {
+  const raw = String(value ?? "");
+
+  if (
+    !raw ||
+    /^(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:|blob:)/i.test(raw)
+  ) {
+    return raw;
+  }
+
+  return new URL(raw.replace(/^\/+/, ""), baseHref).href;
+};
       })();
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
