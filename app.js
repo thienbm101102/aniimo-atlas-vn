@@ -362,6 +362,7 @@ const state = {
   dragStart: null,
   activePointers: new Map(),
   pinch: null,
+  mapScrollbarDrag: null,
   suppressPinClickUntil: 0,
   selectedPin: null,
   selectedSpawnIndex: null,
@@ -500,6 +501,8 @@ const els = {
   teamPanel: document.querySelector("#teamPanel"),
   mapViewport: document.querySelector("#mapViewport"),
   mapWorld: document.querySelector("#mapWorld"),
+  mapVerticalScrollbar: document.querySelector("#mapVerticalScrollbar"),
+  mapVerticalScrollThumb: document.querySelector("#mapVerticalScrollThumb"),
   mapTiles: document.querySelector("#mapTiles"),
   mapImage: document.querySelector("#mapImage"),
   mapUndergroundLayer: document.querySelector("#mapUndergroundLayer"),
@@ -7030,9 +7033,106 @@ function syncDomPinPositions() {
   });
 }
 
+function updateMapVerticalScrollbar() {
+  const scrollbar = els.mapVerticalScrollbar;
+  const thumb = els.mapVerticalScrollThumb;
+  if (!scrollbar || !thumb || !state.data || isCatalogView()) {
+    scrollbar?.setAttribute("hidden", "");
+    return;
+  }
+  const rect = els.mapViewport.getBoundingClientRect();
+  const map = currentMap();
+  const scaledHeight = map.height * state.scale;
+  const viewportHeight = Math.max(1, rect.height);
+  const maxPan = MAP_EDGE_MARGIN;
+  const minPan = viewportHeight - scaledHeight - MAP_EDGE_MARGIN;
+  const scrollRange = Math.max(0, maxPan - minPan);
+  if (scrollRange <= 1 || scaledHeight <= viewportHeight + MAP_EDGE_MARGIN * 2) {
+    scrollbar.setAttribute("hidden", "");
+    return;
+  }
+
+  scrollbar.removeAttribute("hidden");
+  const track = scrollbar.querySelector(".map-vertical-scrollbar-track");
+  const trackHeight = Math.max(1, track.clientHeight);
+  const thumbHeight = Math.max(42, Math.min(trackHeight - 4, trackHeight * (viewportHeight / scaledHeight)));
+  const progress = clamp((maxPan - state.panY) / scrollRange, 0, 1);
+  const available = Math.max(1, trackHeight - thumbHeight);
+  const offset = progress * available;
+  thumb.style.height = `${thumbHeight}px`;
+  thumb.style.transform = `translateY(${offset}px)`;
+  scrollbar.setAttribute("aria-valuenow", String(Math.round(progress * 100)));
+  scrollbar.setAttribute("aria-valuetext", `${Math.round(progress * 100)}%`);
+}
+
+function setMapVerticalScrollProgress(progress) {
+  if (!state.data || isCatalogView()) return;
+  const rect = els.mapViewport.getBoundingClientRect();
+  const map = currentMap();
+  const scaledHeight = map.height * state.scale;
+  const maxPan = MAP_EDGE_MARGIN;
+  const minPan = rect.height - scaledHeight - MAP_EDGE_MARGIN;
+  const scrollRange = Math.max(0, maxPan - minPan);
+  if (!scrollRange) return;
+  const normalized = clamp(Number(progress) || 0, 0, 1);
+  state.panY = maxPan - normalized * scrollRange;
+  clampPan();
+  applyTransform();
+}
+
+function handleMapScrollbarPointerDown(event) {
+  if (!els.mapVerticalScrollbar || els.mapVerticalScrollbar.hasAttribute("hidden")) return;
+  event.preventDefault();
+  event.stopPropagation();
+  const thumb = els.mapVerticalScrollThumb;
+  if (event.target === thumb) {
+    const track = els.mapVerticalScrollbar.querySelector(".map-vertical-scrollbar-track");
+    state.mapScrollbarDrag = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      startOffset: thumb.getBoundingClientRect().top - track.getBoundingClientRect().top,
+    };
+    els.mapVerticalScrollbar.setAttribute("data-dragging", "true");
+    thumb.setPointerCapture?.(event.pointerId);
+    return;
+  }
+
+  const trackRect = els.mapVerticalScrollbar.querySelector(".map-vertical-scrollbar-track").getBoundingClientRect();
+  const thumbRect = thumb.getBoundingClientRect();
+  const maxOffset = Math.max(1, trackRect.height - thumbRect.height);
+  const offset = clamp(event.clientY - trackRect.top - thumbRect.height / 2, 0, maxOffset);
+  setMapVerticalScrollProgress(offset / maxOffset);
+}
+
+function handleMapScrollbarPointerMove(event) {
+  const drag = state.mapScrollbarDrag;
+  if (!drag || drag.pointerId !== event.pointerId) return;
+  event.preventDefault();
+  const trackRect = els.mapVerticalScrollbar.querySelector(".map-vertical-scrollbar-track").getBoundingClientRect();
+  const thumbRect = els.mapVerticalScrollThumb.getBoundingClientRect();
+  const maxOffset = Math.max(1, trackRect.height - thumbRect.height);
+  const offset = clamp(drag.startOffset + (event.clientY - drag.startY), 0, maxOffset);
+  setMapVerticalScrollProgress(offset / maxOffset);
+}
+
+function handleMapScrollbarPointerUp(event) {
+  if (state.mapScrollbarDrag?.pointerId !== event.pointerId) return;
+  state.mapScrollbarDrag = null;
+  els.mapVerticalScrollbar?.removeAttribute("data-dragging");
+  if (els.mapVerticalScrollThumb?.hasPointerCapture?.(event.pointerId)) {
+    els.mapVerticalScrollThumb.releasePointerCapture(event.pointerId);
+  }
+}
+
+function nudgeMapScrollProgress(delta) {
+  const current = Number(els.mapVerticalScrollbar?.getAttribute("aria-valuenow")) || 0;
+  setMapVerticalScrollProgress((current + delta) / 100);
+}
+
 function applyTransform() {
   stabilizeViewport();
   els.mapWorld.style.transform = `matrix(${state.scale}, 0, 0, ${state.scale}, ${state.panX}, ${state.panY})`;
+  updateMapVerticalScrollbar();
   scheduleMapTileDetail();
   if (state.canvasMode) {
     scheduleCanvasRender();
@@ -9278,6 +9378,18 @@ function bindEvents() {
   els.fitButton.addEventListener("click", fitMap);
   els.mapPanUpButton.addEventListener("click", () => nudgeMapPan(-1));
   els.mapPanDownButton.addEventListener("click", () => nudgeMapPan(1));
+  els.mapVerticalScrollbar?.addEventListener("pointerdown", handleMapScrollbarPointerDown);
+  els.mapVerticalScrollbar?.addEventListener("pointermove", handleMapScrollbarPointerMove);
+  els.mapVerticalScrollbar?.addEventListener("pointerup", handleMapScrollbarPointerUp);
+  els.mapVerticalScrollbar?.addEventListener("pointercancel", handleMapScrollbarPointerUp);
+  els.mapVerticalScrollbar?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") { event.preventDefault(); nudgeMapScrollProgress(8); }
+    else if (event.key === "ArrowUp") { event.preventDefault(); nudgeMapScrollProgress(-8); }
+    else if (event.key === "PageDown") { event.preventDefault(); nudgeMapScrollProgress(24); }
+    else if (event.key === "PageUp") { event.preventDefault(); nudgeMapScrollProgress(-24); }
+    else if (event.key === "Home") { event.preventDefault(); setMapVerticalScrollProgress(0); }
+    else if (event.key === "End") { event.preventDefault(); setMapVerticalScrollProgress(1); }
+  });
   els.undergroundLayerToggle.addEventListener("click", () => {
     if (!undergroundLayerForCurrentMap()) return;
     state.undergroundLayerVisible = !state.undergroundLayerVisible;

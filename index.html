@@ -216,12 +216,15 @@
                 <button id="fitButton" type="button">Vừa khung</button>
               </div>
             </div>
-            <div class="map-pan-control" aria-label="Điều khiển cuộn bản đồ">
-              <button id="mapPanUpButton" type="button" aria-label="Cuộn bản đồ lên" title="Cuộn bản đồ lên">↑</button>
-              <div class="map-pan-wheel" aria-hidden="true">
-                <span></span><span></span><span></span>
+            <div class="map-pan-control" aria-hidden="true" hidden>
+              <button id="mapPanUpButton" type="button" tabindex="-1">↑</button>
+              <div class="map-pan-wheel"><span></span><span></span><span></span></div>
+              <button id="mapPanDownButton" type="button" tabindex="-1">↓</button>
+            </div>
+            <div id="mapVerticalScrollbar" class="map-vertical-scrollbar" aria-label="Thanh cuộn dọc bản đồ" role="scrollbar" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+              <div class="map-vertical-scrollbar-track">
+                <div id="mapVerticalScrollThumb" class="map-vertical-scrollbar-thumb"></div>
               </div>
-              <button id="mapPanDownButton" type="button" aria-label="Cuộn bản đồ xuống" title="Cuộn bản đồ xuống">↓</button>
             </div>
             <div class="map-readout-cluster">
               <button id="undergroundPlanToggle" class="map-underground-plan-toggle" type="button" aria-label="Chọn khu vực ngầm" title="Chọn khu vực ngầm" hidden><span>Khu vực</span><strong id="undergroundPlanToggleLabel">Tất cả</strong></button>
