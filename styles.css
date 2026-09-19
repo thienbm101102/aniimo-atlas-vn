@@ -8350,19 +8350,18 @@ select:focus-visible {
 }
 
 .brand-mark {
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
   display: grid;
+  width: 36px;
+  height: 36px;
   place-items: center;
-  overflow: hidden;
-}
-
-.brand-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,.22), transparent 40%),
+    linear-gradient(145deg, var(--accent), var(--accent-strong));
+  color: #08100e;
+  font-family: var(--font-display);
+  font-weight: 900;
+  box-shadow: 0 10px 28px rgba(var(--accent-rgb), 0.22);
 }
 
 .brand-name {
@@ -10641,6 +10640,10 @@ select:focus-visible {
   }
 }
 
-.catalog-panel > .catalog-heading {
-  display: none !important;
+
+/* Safe inline Aniipedia logo */
+.brand-mark svg {
+  width: 70%;
+  height: 70%;
+  display: block;
 }
