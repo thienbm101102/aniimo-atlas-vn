@@ -6,6 +6,31 @@
     <meta name="theme-color" content="#0b0e13">
     <meta name="description" content="ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo">
     <title>ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo</title>
+    <script>
+      (() => {
+        // GitHub Pages may serve a project site from /repo/ and can also
+        // receive requests without the trailing slash (/repo). Normalize
+        // the application base once so every relative data/asset URL keeps
+        // pointing inside the deployed site.
+        const pathname = window.location.pathname || "/";
+        let baseHref;
+
+        if (window.location.protocol === "file:") {
+          baseHref = new URL("./", window.location.href).href;
+        } else if (pathname.endsWith("/")) {
+          baseHref = new URL(".", window.location.href).href;
+        } else if (/\/[^/]+\.[^/]+$/.test(pathname)) {
+          baseHref = new URL("./", window.location.href).href;
+        } else {
+          baseHref = new URL(`${pathname}/`, window.location.origin).href;
+        }
+
+        const base = document.createElement("base");
+        base.href = baseHref;
+        document.head.prepend(base);
+        window.ANIIPEDIA_BASE_URL = baseHref;
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -34,22 +59,22 @@
 
         <nav id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Điều hướng chính">
           <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Bản đồ</span>
+            <span class="workspace-tab-icon" aria-hidden="true">⌂</span><span>Bản đồ</span>
           </button>
           <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Theo dõi</span>
+            <span class="workspace-tab-icon" aria-hidden="true">◷</span><span>Theo dõi</span>
           </button>
           <button id="checklistWorkspaceTab" class="workspace-tab" data-workspace-view="checklist" type="button" role="tab" aria-controls="checklistWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Danh sách</span>
+            <span class="workspace-tab-icon" aria-hidden="true">✓</span><span>Danh sách</span>
           </button>
           <button id="aniilogWorkspaceTab" class="workspace-tab" data-workspace-view="aniilog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Aniilog</span>
+            <span class="workspace-tab-icon" aria-hidden="true">✦</span><span>Aniilog</span>
           </button>
           <button id="itemlogWorkspaceTab" class="workspace-tab" data-workspace-view="itemlog" type="button" role="tab" aria-controls="catalogWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Kho vật phẩm</span>
+            <span class="workspace-tab-icon" aria-hidden="true">◈</span><span>Kho vật phẩm</span>
           </button>
           <button id="teamWorkspaceTab" class="workspace-tab" data-workspace-view="team" type="button" role="tab" aria-controls="teamWorkspace" aria-selected="false">
-            <span class="workspace-tab-icon" aria-hidden="true"></span><span>Đội hình</span>
+            <span class="workspace-tab-icon" aria-hidden="true">♜</span><span>Đội hình</span>
           </button>
         </nav>
 
@@ -69,7 +94,7 @@
               <h1 id="contextTitle">Bản đồ thế giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
-            
+            <button id="sidebarCollapseButton" class="sidebar-collapse-button" type="button" aria-controls="sidebar" aria-expanded="true" aria-label="Thu gọn bảng điều khiển" title="Thu gọn bảng điều khiển">‹</button>
           </div>
 
           <div id="mapWorkspace" class="sidebar-workspace" role="tabpanel" aria-labelledby="mapWorkspaceTab">

@@ -47,3 +47,22 @@ imported into Discord-backed sync later.
 - Website `x` = scene position axis `1`.
 - Website `y` = scene position axis `3`.
 - Scene position axis `2` is exported as `height_y`.
+
+## GitHub Pages
+
+The site is path-safe for GitHub Pages project sites. Relative data and asset
+requests are anchored to the deployed project directory, so repositories such
+as `https://USERNAME.github.io/REPOSITORY/` can load `data/*.json`,
+`data/maps/*.json`, and `assets/*` without moving the files to the domain root.
+
+Recommended deployment:
+
+1. Keep the generated folder contents at the repository root.
+2. Keep `.github/workflows/deploy-pages.yml` committed.
+3. Push to `main` and wait for the **Deploy to GitHub Pages** workflow to finish.
+4. Open the Pages URL with the repository path, for example
+   `https://USERNAME.github.io/REPOSITORY/`.
+
+Do not open the HTML through `github.com/.../blob/main/index.html`; GitHub's
+file viewer is not a web host and will not execute `fetch()` for the app data.
+
