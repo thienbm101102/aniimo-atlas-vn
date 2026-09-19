@@ -8328,28 +8328,9 @@ function renderItems() {
       selectableItems.forEach((item) => setItemSelection(item.item_id, true));
       refreshVisibility();
     });
-    const displayLayerLabels = {
-      items: "Vật phẩm",
-      aniimo: "Aniimo",
-      eggs: "Trứng",
-      teleports: "Dịch chuyển",
-      ambers: "Lumens",
-      misc: "Khác",
-    };
     const tabLabel = document.createElement("span");
-    tabLabel.className = "layer-tab-label";
-    tabLabel.textContent = displayLayerLabels[layer.id] || layer.label;
-
-    const tabMeta = document.createElement("span");
-    tabMeta.className = "layer-tab-meta";
-    const entryCount = Number(layer.entry_count ?? layerItems.length);
-    const spawnCount = Number(layer.spawn_count ?? 0);
-    tabMeta.textContent = spawnCount > 0
-      ? `${entryCount.toLocaleString("vi-VN")} loại · ${spawnCount.toLocaleString("vi-VN")} điểm`
-      : `${entryCount.toLocaleString("vi-VN")} loại`;
-
-    tab.append(tabLabel, tabMeta);
-    tab.setAttribute("aria-label", `${tabLabel.textContent}: ${tabMeta.textContent}`);
+    tabLabel.textContent = layer.label;
+    tab.append(tabLabel);
     els.layerTabs.append(tab);
 
     const section = document.createElement("section");
