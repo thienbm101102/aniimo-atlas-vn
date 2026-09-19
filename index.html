@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#0b0e13">
-    <meta name="description" content="Haruno Aniipedia — Kho dữ liệu & bản đồ Aniimo">
-    <title>Haruno Aniipedia</title>
+    <meta name="description" content="ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo">
+    <title>ANIIPEDIA — Kho dữ liệu & bản đồ Aniimo</title>
     <script>
       (() => {
         // Resolve one stable site root for both GitHub Pages project sites
@@ -46,17 +46,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20260919-0752">
+    <link rel="stylesheet" href="./styles.css?v=20260919-0915-null-safe">
   </head>
   <body>
     <main id="appShell" class="app-shell">
       <header class="app-topbar">
         <div class="brand-lockup">
-          <div class="brand-mark">
-  <img src="logo.png" alt="Aniipedia">
-</div>
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 48 48" role="img" aria-label="Aniipedia">
+              <path d="M24 4 7.5 42h7.1l3.2-8h12.4l3.2 8h7.1L24 4Zm0 11.3 4.6 11.8h-9.2L24 15.3Z" fill="currentColor"/>
+            </svg>
+          </div>
           <div class="brand-copy">
-            <div class="brand-name">Haruno Aniipedia</div>
+            <div class="brand-name">ANIIPEDIA</div>
             <div class="brand-subtitle">Kho dữ liệu & bản đồ Aniimo</div>
           </div>
         </div>
@@ -64,6 +66,7 @@
         <div class="global-search-shell" id="globalSearchShell">
           <label class="visually-hidden" for="globalSearchInput">Tìm kiếm toàn hệ thống</label>
           <div class="global-search-field">
+            <span class="global-search-icon" aria-hidden="true">⌕</span>
             <input id="globalSearchInput" type="search" autocomplete="off" placeholder="Tìm Aniimo, vật phẩm, kỹ năng, địa điểm…">
             <kbd>Ctrl K</kbd>
           </div>
@@ -72,7 +75,7 @@
 
         <nav id="workspaceTabs" class="workspace-tabs" role="tablist" aria-label="Điều hướng chính">
           <button id="mapWorkspaceTab" class="workspace-tab" data-workspace-view="map" type="button" role="tab" aria-controls="mapWorkspace" aria-selected="true">
-            <span>Bản đồ</span>
+           <span>Bản đồ</span>
           </button>
           <button id="trackingWorkspaceTab" class="workspace-tab" data-workspace-view="tracking" type="button" role="tab" aria-controls="trackingWorkspace" aria-selected="false">
             <span>Theo dõi</span>
@@ -92,6 +95,9 @@
         </nav>
 
         <div class="topbar-actions">
+          <button id="appVersion" class="topbar-action topbar-version" type="button" aria-haspopup="dialog" aria-controls="changelogOverlay" aria-expanded="false" title="Xem lịch sử cập nhật">
+            <span class="status-dot" aria-hidden="true"></span><span>Đang tải</span>
+          </button>
           <button id="settingsButton" class="topbar-action topbar-icon-button" type="button" aria-haspopup="dialog" aria-controls="settingsOverlay" aria-expanded="false" aria-label="Mở cài đặt" title="Cài đặt">⚙</button>
         </div>
       </header>
@@ -100,8 +106,8 @@
         <aside id="sidebar" class="sidebar" aria-label="Bảng điều khiển ngữ cảnh">
           <div class="context-head">
             <div>
-              <div class="eyebrow">Nguồn dữ liệu: MinMax's Aniipedia</div>
-              <h1 id="contextTitle">Bản Đồ Thế Giới</h1>
+              <div class="eyebrow">KHÔNG GIAN LÀM VIỆC</div>
+              <h1 id="contextTitle">Bản đồ thế giới</h1>
               <p id="mapMeta" class="database-meta">Đang tải dữ liệu…</p>
             </div>
           </div>
@@ -115,6 +121,7 @@
               <div id="mapTabs" class="map-tabs" role="tablist" aria-label="Các bản đồ"></div>
               <label class="search-label" for="searchInput">Tìm trên bản đồ</label>
               <div class="context-search">
+                <span aria-hidden="true">⌕</span>
                 <input id="searchInput" class="search" type="search" autocomplete="off" placeholder="Tên, khu vực hoặc tọa độ">
               </div>
               <div class="toolbar" aria-label="Bộ chọn marker">
@@ -171,7 +178,7 @@
             <div id="checklistCategoryTabs" class="checklist-category-tabs" role="tablist" aria-label="Danh mục checklist"></div>
             <div id="luminChecklistTabs" class="lumin-checklist-tabs" role="tablist" aria-label="Nguồn checklist Lumen" hidden></div>
             <label class="search-label" for="checklistSearchInput">Tìm checklist</label>
-            <div class="context-search"><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
+            <div class="context-search"><span aria-hidden="true">⌕</span><input id="checklistSearchInput" class="search" type="search" autocomplete="off" placeholder="Aniimo, hình thái hoặc địa điểm"></div>
             <div id="checklistList" class="checklist-list" aria-live="polite"></div>
           </section>
 
@@ -255,6 +262,17 @@
       </section>
     </div>
 
+    <div id="changelogOverlay" class="settings-overlay" hidden>
+      <section class="settings-dialog changelog-dialog" role="dialog" aria-modal="true" aria-labelledby="changelogTitle">
+        <div class="settings-dialog-heading">
+          <div><div class="section-kicker">LỊCH SỬ</div><h2 id="changelogTitle">Lịch sử cập nhật</h2></div>
+          <button id="changelogCloseButton" class="settings-close-button" type="button" aria-label="Đóng lịch sử cập nhật" title="Đóng">×</button>
+        </div>
+        <div id="changelogContent" class="changelog-content" aria-live="polite">Đang tải thay đổi từ GitHub…</div>
+        <a class="changelog-history-link" href="https://github.com/donneeee/MinMax-Aniipedia/commits/main/" target="_blank" rel="noreferrer">Xem toàn bộ thay đổi trên GitHub</a>
+      </section>
+    </div>
+
     <div id="shortcutOverlay" class="shortcut-overlay" hidden>
       <section class="shortcut-dialog" role="dialog" aria-modal="true" aria-labelledby="shortcutTitle">
         <div class="settings-dialog-heading"><div><div class="section-kicker">TRỢ GIÚP</div><h2 id="shortcutTitle">Phím tắt</h2></div><button id="shortcutCloseButton" class="settings-close-button" type="button" aria-label="Đóng">×</button></div>
@@ -271,10 +289,10 @@
 
     <div id="appToastRegion" class="app-toast-region" aria-live="polite" aria-atomic="true"></div>
 
-    <script defer src="./app-config.js?v=20260919-0648"></script>
-    <script defer src="./localization.js?v=20260919-0648"></script>
-    <script defer src="./ui-enhancements.js?v=20260919-0648"></script>
-    <script defer src="./team-builder.js?v=20260919-0648"></script>
-    <script defer src="./app.js?v=20260919-0648"></script>
+    <script defer src="./app-config.js?v=20260919-0915-null-safe"></script>
+    <script defer src="./localization.js?v=20260919-0915-null-safe"></script>
+    <script defer src="./ui-enhancements.js?v=20260919-0915-null-safe"></script>
+    <script defer src="./team-builder.js?v=20260919-0915-null-safe"></script>
+    <script defer src="./app.js?v=20260919-0915-null-safe"></script>
   </body>
 </html>

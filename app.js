@@ -9087,7 +9087,7 @@ function scheduleMapDataLoad(mapId, token) {
   if (els.mapImage.complete && els.mapImage.naturalWidth) {
     queueAfterFirstPaint();
   } else {
-    els.mapImage.addEventListener("load", queueAfterFirstPaint, { once: true });
+    els.mapImage?.addEventListener("load", queueAfterFirstPaint, { once: true });
     // Preserve marker availability if a preview fails or is unusually slow.
     window.setTimeout(queueAfterFirstPaint, 2500);
   }
@@ -9145,53 +9145,53 @@ function switchMap(mapId, preserveSharedPins = false) {
 function bindEvents() {
   window.addEventListener("scroll", resetDocumentScroll, { passive: true });
   window.addEventListener("scroll", scheduleMobileCatalogStickyIdentity, { passive: true });
-  els.catalogPanel.addEventListener("scroll", scheduleMobileCatalogStickyIdentity, { passive: true });
-  els.mapViewport.addEventListener("scroll", resetMapScroll, { passive: true });
-  els.mobileSelectionToggle.addEventListener("click", () => {
+  els.catalogPanel?.addEventListener("scroll", scheduleMobileCatalogStickyIdentity, { passive: true });
+  els.mapViewport?.addEventListener("scroll", resetMapScroll, { passive: true });
+  els.mobileSelectionToggle?.addEventListener("click", () => {
     setMobileSelectionMinimized(!state.mobileSelectionMinimized);
   });
-  els.desktopSelectionToggle.addEventListener("click", () => {
+  els.desktopSelectionToggle?.addEventListener("click", () => {
     setDesktopSelectionMinimized(!state.desktopSelectionMinimized);
   });
-  const desktopSelectionHeading = els.desktopSelectionPanel.querySelector(".panel-heading");
-  desktopSelectionHeading.addEventListener("pointerdown", startDesktopSelectionDrag);
-  desktopSelectionHeading.addEventListener("pointermove", moveDesktopSelectionDrag);
-  desktopSelectionHeading.addEventListener("pointerup", finishDesktopSelectionDrag);
-  desktopSelectionHeading.addEventListener("pointercancel", finishDesktopSelectionDrag);
-  desktopSelectionHeading.addEventListener("lostpointercapture", finishDesktopSelectionDrag);
-  els.selectionCatalogShortcut.addEventListener("click", openSelectedMarkerCatalogEntry);
-  els.selectionCloseButton.addEventListener("click", dismissSelection);
-  els.mobileSelectionCatalogShortcut.addEventListener("click", openSelectedMarkerCatalogEntry);
-  els.mobileSelectionCloseButton.addEventListener("click", dismissSelection);
-  MOBILE_LAYOUT_QUERY.addEventListener("change", () => {
+  const desktopSelectionHeading = els.desktopSelectionPanel?.querySelector(".panel-heading");
+  desktopSelectionHeading?.addEventListener("pointerdown", startDesktopSelectionDrag);
+  desktopSelectionHeading?.addEventListener("pointermove", moveDesktopSelectionDrag);
+  desktopSelectionHeading?.addEventListener("pointerup", finishDesktopSelectionDrag);
+  desktopSelectionHeading?.addEventListener("pointercancel", finishDesktopSelectionDrag);
+  desktopSelectionHeading?.addEventListener("lostpointercapture", finishDesktopSelectionDrag);
+  els.selectionCatalogShortcut?.addEventListener("click", openSelectedMarkerCatalogEntry);
+  els.selectionCloseButton?.addEventListener("click", dismissSelection);
+  els.mobileSelectionCatalogShortcut?.addEventListener("click", openSelectedMarkerCatalogEntry);
+  els.mobileSelectionCloseButton?.addEventListener("click", dismissSelection);
+  MOBILE_LAYOUT_QUERY?.addEventListener("change", () => {
     if (state.selectedSpawnIndex === null) state.mobileSelectionMinimized = true;
     syncDesktopSelectionPlacement();
     updateMobileSelectionPanel();
     scheduleMobileCatalogStickyIdentity();
     window.requestAnimationFrame(fitMap);
   });
-  els.sidebarCollapseButton.addEventListener("click", () => setDesktopSidebarCollapsed(true));
-  els.sidebarRestoreButton.addEventListener("click", () => setDesktopSidebarCollapsed(false));
-  DESKTOP_SIDEBAR_QUERY.addEventListener("change", (event) => {
+  els.sidebarCollapseButton?.addEventListener("click", () => setDesktopSidebarCollapsed(true));
+  els.sidebarRestoreButton?.addEventListener("click", () => setDesktopSidebarCollapsed(false));
+  DESKTOP_SIDEBAR_QUERY?.addEventListener("change", (event) => {
     if (!event.matches) setDesktopSidebarCollapsed(false);
   });
-  els.mapWorkspaceTab.addEventListener("click", () => setSidebarView("map"));
-  els.trackingWorkspaceTab.addEventListener("click", () => setSidebarView("tracking"));
-  els.checklistWorkspaceTab.addEventListener("click", () => setSidebarView("checklist"));
-  els.aniilogWorkspaceTab.addEventListener("click", () => setSidebarView("aniilog"));
-  els.itemlogWorkspaceTab.addEventListener("click", () => setSidebarView("itemlog"));
-  els.teamWorkspaceTab.addEventListener("click", () => setSidebarView("team"));
-  els.appVersion.addEventListener("click", openChangelog);
-  els.settingsButton.addEventListener("click", openSettings);
-  els.settingsCloseButton.addEventListener("click", closeSettings);
-  els.settingsOverlay.addEventListener("click", (event) => {
+  els.mapWorkspaceTab?.addEventListener("click", () => setSidebarView("map"));
+  els.trackingWorkspaceTab?.addEventListener("click", () => setSidebarView("tracking"));
+  els.checklistWorkspaceTab?.addEventListener("click", () => setSidebarView("checklist"));
+  els.aniilogWorkspaceTab?.addEventListener("click", () => setSidebarView("aniilog"));
+  els.itemlogWorkspaceTab?.addEventListener("click", () => setSidebarView("itemlog"));
+  els.teamWorkspaceTab?.addEventListener("click", () => setSidebarView("team"));
+  els.appVersion?.addEventListener("click", openChangelog);
+  els.settingsButton?.addEventListener("click", openSettings);
+  els.settingsCloseButton?.addEventListener("click", closeSettings);
+  els.settingsOverlay?.addEventListener("click", (event) => {
     if (event.target === els.settingsOverlay) closeSettings();
   });
-  els.changelogCloseButton.addEventListener("click", closeChangelog);
-  els.changelogOverlay.addEventListener("click", (event) => {
+  els.changelogCloseButton?.addEventListener("click", closeChangelog);
+  els.changelogOverlay?.addEventListener("click", (event) => {
     if (event.target === els.changelogOverlay) closeChangelog();
   });
-  els.workspaceTabs.addEventListener("keydown", (event) => {
+  els.workspaceTabs?.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
     const tabs = [...els.workspaceTabs.querySelectorAll(".workspace-tab")];
     const currentIndex = Math.max(0, tabs.findIndex((tab) => tab.dataset.workspaceView === state.sidebarView));
@@ -9219,17 +9219,17 @@ function bindEvents() {
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) updateTrackingCountdowns();
   });
-  els.searchInput.addEventListener("input", () => {
+  els.searchInput?.addEventListener("input", () => {
     clearLocatedSpawn();
     state.search = normalizedSearch(els.searchInput.value);
     renderItems();
     refreshVisibility();
   });
-  els.checklistSearchInput.addEventListener("input", () => {
+  els.checklistSearchInput?.addEventListener("input", () => {
     state.checklistSearch = normalizedSearch(els.checklistSearchInput.value);
     renderChecklist();
   });
-  els.mapTabs.addEventListener("keydown", (event) => {
+  els.mapTabs?.addEventListener("keydown", (event) => {
     if (!new Set(["ArrowLeft", "ArrowRight", "Home", "End"]).has(event.key)) return;
     const tabs = [...els.mapTabs.querySelectorAll(".map-tab")];
     const currentIndex = tabs.findIndex((tab) => tab.dataset.mapId === state.activeMapId);
@@ -9245,27 +9245,27 @@ function bindEvents() {
       nextTab.focus();
     }
   });
-  els.selectAllButton.addEventListener("click", () => {
+  els.selectAllButton?.addEventListener("click", () => {
     clearLocatedSpawn();
     activeMapItems().forEach((item) => setItemSelection(item.item_id, true));
     refreshVisibility();
   });
-  els.selectNoneButton.addEventListener("click", () => {
+  els.selectNoneButton?.addEventListener("click", () => {
     clearLocatedSpawn();
     state.enabled.clear();
     refreshVisibility();
   });
-  els.sharePinsButton.addEventListener("click", copySharedPinLink);
-  els.zoomInButton.addEventListener("click", () => {
+  els.sharePinsButton?.addEventListener("click", copySharedPinLink);
+  els.zoomInButton?.addEventListener("click", () => {
     const rect = els.mapViewport.getBoundingClientRect();
     zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, state.scale * 1.25);
   });
-  els.zoomOutButton.addEventListener("click", () => {
+  els.zoomOutButton?.addEventListener("click", () => {
     const rect = els.mapViewport.getBoundingClientRect();
     zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, state.scale / 1.25);
   });
-  els.fitButton.addEventListener("click", fitMap);
-  els.undergroundLayerToggle.addEventListener("click", () => {
+  els.fitButton?.addEventListener("click", fitMap);
+  els.undergroundLayerToggle?.addEventListener("click", () => {
     if (!undergroundLayerForCurrentMap()) return;
     state.undergroundLayerVisible = !state.undergroundLayerVisible;
     if (state.undergroundLayerVisible) {
@@ -9274,7 +9274,7 @@ function bindEvents() {
     }
     updateUndergroundMapLayerVisibility();
   });
-  els.undergroundPlanToggle.addEventListener("click", () => {
+  els.undergroundPlanToggle?.addEventListener("click", () => {
     const layer = undergroundLayerForCurrentMap();
     if (!layer?.plans?.length) return;
     const modes = [{ id: "all", label: "All underground areas" }, ...layer.plans];
@@ -9282,12 +9282,12 @@ function bindEvents() {
     state.undergroundForegroundPlans.set(state.activeMapId, modes[nextIndex].id);
     updateUndergroundPlanOrdering();
   });
-  els.mapViewport.addEventListener("wheel", (event) => {
+  els.mapViewport?.addEventListener("wheel", (event) => {
     event.preventDefault();
     const factor = event.deltaY < 0 ? 1.12 : 0.88;
     zoomAt(event.clientX, event.clientY, state.scale * factor);
   }, { passive: false });
-  els.mapViewport.addEventListener("contextmenu", (event) => {
+  els.mapViewport?.addEventListener("contextmenu", (event) => {
     const pin = event.target instanceof Element ? event.target.closest(".pin") : null;
     const pinIndex = Number(pin?.dataset.spawnIndex);
     const entry = Number.isInteger(pinIndex)
@@ -9298,7 +9298,7 @@ function bindEvents() {
     event.stopPropagation();
     deselectIndividualSpawn(entry);
   });
-  els.mapViewport.addEventListener("pointerdown", (event) => {
+  els.mapViewport?.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     const pointer = rememberActivePointer(event, eventTargetsPin(event));
     els.mapViewport.setPointerCapture(event.pointerId);
@@ -9333,7 +9333,7 @@ function bindEvents() {
     }
     startMapDrag(pointer);
   });
-  els.mapViewport.addEventListener("pointermove", (event) => {
+  els.mapViewport?.addEventListener("pointermove", (event) => {
     if (state.activePointers.has(event.pointerId)) rememberActivePointer(event);
     updateCoordinateReadout(event);
 
@@ -9349,20 +9349,20 @@ function bindEvents() {
     clampPan();
     applyTransform();
   });
-  els.mapViewport.addEventListener("pointerup", (event) => {
+  els.mapViewport?.addEventListener("pointerup", (event) => {
     if (!state.activePointers.has(event.pointerId)) return;
     rememberActivePointer(event);
     finishPointerInteraction(event);
   });
-  els.mapViewport.addEventListener("pointercancel", (event) => {
+  els.mapViewport?.addEventListener("pointercancel", (event) => {
     if (!state.activePointers.has(event.pointerId)) return;
     finishPointerInteraction(event, true);
   });
-  els.mapViewport.addEventListener("lostpointercapture", (event) => {
+  els.mapViewport?.addEventListener("lostpointercapture", (event) => {
     if (!state.activePointers.has(event.pointerId)) return;
     finishPointerInteraction(event, true);
   });
-  els.mapViewport.addEventListener("pointerleave", (event) => {
+  els.mapViewport?.addEventListener("pointerleave", (event) => {
     if (event.pointerType !== "mouse" || state.dragging || state.pinch) return;
     if (state.hoveredCanvasIndex !== null) {
       state.hoveredCanvasIndex = null;
@@ -9381,7 +9381,7 @@ function bindEvents() {
     if (state.data) applyTransform();
   };
   if (typeof MOBILE_LAYOUT_QUERY.addEventListener === "function") {
-    MOBILE_LAYOUT_QUERY.addEventListener("change", refreshPinGeometry);
+    MOBILE_LAYOUT_QUERY?.addEventListener("change", refreshPinGeometry);
   } else if (typeof MOBILE_LAYOUT_QUERY.addListener === "function") {
     MOBILE_LAYOUT_QUERY.addListener(refreshPinGeometry);
   }
